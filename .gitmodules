@@ -1,0 +1,6 @@
+[submodule "lib/BTT"]
+	path = lib/BTT
+	url = https://github.com/michaelkrzyzaniak/Beat-and-Tempo-Tracking
+[submodule "lib/aubio"]
+	path = lib/aubio
+	url = https://github.com/aubio/aubio

@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "realtime-beat-detection",
+			"path": "../../../../../platformio/realtime-beat-detection"
+		}
+	],
+	"settings": {}
+}

@@ -1,0 +1,2194 @@
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.arch armv7e-m
+   3              		.fpu fpv5-d16
+   4              		.eabi_attribute 28, 1
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 2
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.file	"STFT.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.text.stft_destroy,"ax",%progbits
+  19              		.align	1
+  20              		.p2align 2,,3
+  21              		.global	stft_destroy
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	stft_destroy:
+  27              	.LVL0:
+  28              	.LFB321:
+  29              		.file 1 "lib/BTT/src/STFT.c"
+   1:lib/BTT/src/STFT.c **** #include "STFT.h"
+   2:lib/BTT/src/STFT.c **** 
+   3:lib/BTT/src/STFT.c **** #include <stdlib.h> //calloc
+   4:lib/BTT/src/STFT.c **** 
+   5:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+   6:lib/BTT/src/STFT.c **** struct Opaque_STFT_Struct
+   7:lib/BTT/src/STFT.c **** {
+   8:lib/BTT/src/STFT.c ****   int           should_resynthesize;
+   9:lib/BTT/src/STFT.c ****   int           window_size;
+  10:lib/BTT/src/STFT.c ****   int           fft_N;
+  11:lib/BTT/src/STFT.c ****   int           overlap;
+  12:lib/BTT/src/STFT.c ****   int           hop_size;
+  13:lib/BTT/src/STFT.c ****   int           sample_counter;
+  14:lib/BTT/src/STFT.c ****   int           input_index;
+  15:lib/BTT/src/STFT.c ****   int           output_index;;
+  16:lib/BTT/src/STFT.c ****   dft_sample_t* window;
+  17:lib/BTT/src/STFT.c ****   dft_sample_t* running_input;
+  18:lib/BTT/src/STFT.c ****   dft_sample_t* running_output;
+  19:lib/BTT/src/STFT.c ****   dft_sample_t* real;
+  20:lib/BTT/src/STFT.c **** };
+  21:lib/BTT/src/STFT.c **** 
+  22:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+  23:lib/BTT/src/STFT.c **** STFT* stft_new(int window_size /*power of 2 please*/, int overlap /* 1, 2, 4, 8 */, int should_resy
+  24:lib/BTT/src/STFT.c **** {
+  25:lib/BTT/src/STFT.c ****   STFT* self = calloc(1, sizeof(*self));
+  26:lib/BTT/src/STFT.c ****   if(self != NULL)
+  27:lib/BTT/src/STFT.c ****     {
+  28:lib/BTT/src/STFT.c ****       self->should_resynthesize  = should_resynthesize;
+  29:lib/BTT/src/STFT.c ****       self->window_size          = window_size;
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 2
+
+
+  30:lib/BTT/src/STFT.c ****       self->fft_N                = (should_resynthesize) ? overlap * window_size : window_size;
+  31:lib/BTT/src/STFT.c ****       self->overlap              = overlap;
+  32:lib/BTT/src/STFT.c ****       self->hop_size             = window_size / overlap;
+  33:lib/BTT/src/STFT.c ****       self->sample_counter       = 0;
+  34:lib/BTT/src/STFT.c ****       self->input_index          = 0;
+  35:lib/BTT/src/STFT.c ****       self->output_index         = 0;
+  36:lib/BTT/src/STFT.c ****       self->window               = calloc(self->window_size, sizeof(*(self->window)));
+  37:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+  38:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+  39:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+  40:lib/BTT/src/STFT.c ****       if(self->window           == NULL) return stft_destroy(self);
+  41:lib/BTT/src/STFT.c ****       if(self->running_input    == NULL) return stft_destroy(self);
+  42:lib/BTT/src/STFT.c ****       if(self->running_output   == NULL) return stft_destroy(self);
+  43:lib/BTT/src/STFT.c ****       if(self->real             == NULL) return stft_destroy(self);
+  44:lib/BTT/src/STFT.c ****   
+  45:lib/BTT/src/STFT.c ****       //no choice for now
+  46:lib/BTT/src/STFT.c ****       dft_init_blackman_window(self->window, self->window_size);
+  47:lib/BTT/src/STFT.c ****   }
+  48:lib/BTT/src/STFT.c ****   return self;
+  49:lib/BTT/src/STFT.c **** }
+  50:lib/BTT/src/STFT.c **** 
+  51:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+  52:lib/BTT/src/STFT.c **** STFT* stft_destroy(STFT* self)
+  53:lib/BTT/src/STFT.c **** {
+  30              		.loc 1 53 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  54:lib/BTT/src/STFT.c ****   if(self != NULL)
+  34              		.loc 1 54 3 view .LVU1
+  35              		.loc 1 54 5 is_stmt 0 view .LVU2
+  36 0000 B0B1     		cbz	r0, .L23
+  55:lib/BTT/src/STFT.c ****     {
+  56:lib/BTT/src/STFT.c ****       if(self->window != NULL)
+  37              		.loc 1 56 7 is_stmt 1 view .LVU3
+  53:lib/BTT/src/STFT.c ****   if(self != NULL)
+  38              		.loc 1 53 1 is_stmt 0 view .LVU4
+  39 0002 10B5     		push	{r4, lr}
+  40              		.cfi_def_cfa_offset 8
+  41              		.cfi_offset 4, -8
+  42              		.cfi_offset 14, -4
+  43 0004 0446     		mov	r4, r0
+  44              		.loc 1 56 14 view .LVU5
+  45 0006 006A     		ldr	r0, [r0, #32]
+  46              	.LVL1:
+  47              		.loc 1 56 9 view .LVU6
+  48 0008 08B1     		cbz	r0, .L3
+  57:lib/BTT/src/STFT.c ****         free(self->window);
+  49              		.loc 1 57 9 is_stmt 1 view .LVU7
+  50 000a FFF7FEFF 		bl	free
+  51              	.LVL2:
+  52              	.L3:
+  58:lib/BTT/src/STFT.c ****       if(self->running_input != NULL)
+  53              		.loc 1 58 7 view .LVU8
+  54              		.loc 1 58 14 is_stmt 0 view .LVU9
+  55 000e 606A     		ldr	r0, [r4, #36]
+  56              		.loc 1 58 9 view .LVU10
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 3
+
+
+  57 0010 08B1     		cbz	r0, .L4
+  59:lib/BTT/src/STFT.c ****         free(self->running_input);
+  58              		.loc 1 59 9 is_stmt 1 view .LVU11
+  59 0012 FFF7FEFF 		bl	free
+  60              	.LVL3:
+  61              	.L4:
+  60:lib/BTT/src/STFT.c ****       if(self->running_output != NULL)
+  62              		.loc 1 60 7 view .LVU12
+  63              		.loc 1 60 14 is_stmt 0 view .LVU13
+  64 0016 A06A     		ldr	r0, [r4, #40]
+  65              		.loc 1 60 9 view .LVU14
+  66 0018 08B1     		cbz	r0, .L5
+  61:lib/BTT/src/STFT.c ****         free(self->running_output);
+  67              		.loc 1 61 9 is_stmt 1 view .LVU15
+  68 001a FFF7FEFF 		bl	free
+  69              	.LVL4:
+  70              	.L5:
+  62:lib/BTT/src/STFT.c ****       if(self->real != NULL)
+  71              		.loc 1 62 7 view .LVU16
+  72              		.loc 1 62 14 is_stmt 0 view .LVU17
+  73 001e E06A     		ldr	r0, [r4, #44]
+  74              		.loc 1 62 9 view .LVU18
+  75 0020 08B1     		cbz	r0, .L6
+  63:lib/BTT/src/STFT.c ****         free(self->real);
+  76              		.loc 1 63 9 is_stmt 1 view .LVU19
+  77 0022 FFF7FEFF 		bl	free
+  78              	.LVL5:
+  79              	.L6:
+  64:lib/BTT/src/STFT.c ****     
+  65:lib/BTT/src/STFT.c ****       free(self);
+  80              		.loc 1 65 7 view .LVU20
+  81 0026 2046     		mov	r0, r4
+  82 0028 FFF7FEFF 		bl	free
+  83              	.LVL6:
+  66:lib/BTT/src/STFT.c ****     }
+  67:lib/BTT/src/STFT.c ****   return (STFT*) NULL;
+  84              		.loc 1 67 3 view .LVU21
+  68:lib/BTT/src/STFT.c **** }
+  85              		.loc 1 68 1 is_stmt 0 view .LVU22
+  86 002c 0020     		movs	r0, #0
+  87 002e 10BD     		pop	{r4, pc}
+  88              	.LVL7:
+  89              	.L23:
+  90              		.cfi_def_cfa_offset 0
+  91              		.cfi_restore 4
+  92              		.cfi_restore 14
+  67:lib/BTT/src/STFT.c **** }
+  93              		.loc 1 67 3 is_stmt 1 view .LVU23
+  94              		.loc 1 68 1 is_stmt 0 view .LVU24
+  95 0030 0020     		movs	r0, #0
+  96              	.LVL8:
+  97              		.loc 1 68 1 view .LVU25
+  98 0032 7047     		bx	lr
+  99              		.cfi_endproc
+ 100              	.LFE321:
+ 102              		.section	.text.stft_new,"ax",%progbits
+ 103              		.align	1
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 4
+
+
+ 104              		.p2align 2,,3
+ 105              		.global	stft_new
+ 106              		.syntax unified
+ 107              		.thumb
+ 108              		.thumb_func
+ 110              	stft_new:
+ 111              	.LVL9:
+ 112              	.LFB320:
+  24:lib/BTT/src/STFT.c ****   STFT* self = calloc(1, sizeof(*self));
+ 113              		.loc 1 24 1 is_stmt 1 view -0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 0
+ 116              		@ frame_needed = 0, uses_anonymous_args = 0
+  25:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 117              		.loc 1 25 3 view .LVU27
+  24:lib/BTT/src/STFT.c ****   STFT* self = calloc(1, sizeof(*self));
+ 118              		.loc 1 24 1 is_stmt 0 view .LVU28
+ 119 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 120              		.cfi_def_cfa_offset 32
+ 121              		.cfi_offset 3, -32
+ 122              		.cfi_offset 4, -28
+ 123              		.cfi_offset 5, -24
+ 124              		.cfi_offset 6, -20
+ 125              		.cfi_offset 7, -16
+ 126              		.cfi_offset 8, -12
+ 127              		.cfi_offset 9, -8
+ 128              		.cfi_offset 14, -4
+  24:lib/BTT/src/STFT.c ****   STFT* self = calloc(1, sizeof(*self));
+ 129              		.loc 1 24 1 view .LVU29
+ 130 0004 0546     		mov	r5, r0
+ 131 0006 0E46     		mov	r6, r1
+  25:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 132              		.loc 1 25 16 view .LVU30
+ 133 0008 0120     		movs	r0, #1
+ 134              	.LVL10:
+  25:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 135              		.loc 1 25 16 view .LVU31
+ 136 000a 3021     		movs	r1, #48
+ 137              	.LVL11:
+  24:lib/BTT/src/STFT.c ****   STFT* self = calloc(1, sizeof(*self));
+ 138              		.loc 1 24 1 view .LVU32
+ 139 000c 1746     		mov	r7, r2
+  25:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 140              		.loc 1 25 16 view .LVU33
+ 141 000e FFF7FEFF 		bl	calloc
+ 142              	.LVL12:
+  26:lib/BTT/src/STFT.c ****     {
+ 143              		.loc 1 26 3 is_stmt 1 view .LVU34
+  26:lib/BTT/src/STFT.c ****     {
+ 144              		.loc 1 26 5 is_stmt 0 view .LVU35
+ 145 0012 0446     		mov	r4, r0
+ 146 0014 70B3     		cbz	r0, .L27
+  28:lib/BTT/src/STFT.c ****       self->window_size          = window_size;
+ 147              		.loc 1 28 7 is_stmt 1 view .LVU36
+  29:lib/BTT/src/STFT.c ****       self->fft_N                = (should_resynthesize) ? overlap * window_size : window_size;
+ 148              		.loc 1 29 34 is_stmt 0 view .LVU37
+ 149 0016 C0E90075 		strd	r7, r5, [r0]
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 5
+
+
+  30:lib/BTT/src/STFT.c ****       self->overlap              = overlap;
+ 150              		.loc 1 30 7 is_stmt 1 view .LVU38
+  30:lib/BTT/src/STFT.c ****       self->overlap              = overlap;
+ 151              		.loc 1 30 82 is_stmt 0 view .LVU39
+ 152 001a 77BB     		cbnz	r7, .L40
+ 153 001c A946     		mov	r9, r5
+ 154              	.L29:
+  36:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 155              		.loc 1 36 36 discriminator 4 view .LVU40
+ 156 001e 0421     		movs	r1, #4
+ 157 0020 2846     		mov	r0, r5
+ 158              	.LVL13:
+  32:lib/BTT/src/STFT.c ****       self->sample_counter       = 0;
+ 159              		.loc 1 32 48 discriminator 4 view .LVU41
+ 160 0022 95FBF6F3 		sdiv	r3, r5, r6
+  32:lib/BTT/src/STFT.c ****       self->sample_counter       = 0;
+ 161              		.loc 1 32 34 discriminator 4 view .LVU42
+ 162 0026 2361     		str	r3, [r4, #16]
+  33:lib/BTT/src/STFT.c ****       self->input_index          = 0;
+ 163              		.loc 1 33 34 discriminator 4 view .LVU43
+ 164 0028 0023     		movs	r3, #0
+  31:lib/BTT/src/STFT.c ****       self->hop_size             = window_size / overlap;
+ 165              		.loc 1 31 34 discriminator 4 view .LVU44
+ 166 002a C4E90296 		strd	r9, r6, [r4, #8]
+  32:lib/BTT/src/STFT.c ****       self->sample_counter       = 0;
+ 167              		.loc 1 32 7 is_stmt 1 discriminator 4 view .LVU45
+  33:lib/BTT/src/STFT.c ****       self->input_index          = 0;
+ 168              		.loc 1 33 7 discriminator 4 view .LVU46
+  34:lib/BTT/src/STFT.c ****       self->output_index         = 0;
+ 169              		.loc 1 34 34 is_stmt 0 discriminator 4 view .LVU47
+ 170 002e C4E90533 		strd	r3, r3, [r4, #20]
+  35:lib/BTT/src/STFT.c ****       self->window               = calloc(self->window_size, sizeof(*(self->window)));
+ 171              		.loc 1 35 7 is_stmt 1 discriminator 4 view .LVU48
+  35:lib/BTT/src/STFT.c ****       self->window               = calloc(self->window_size, sizeof(*(self->window)));
+ 172              		.loc 1 35 34 is_stmt 0 discriminator 4 view .LVU49
+ 173 0032 E361     		str	r3, [r4, #28]
+  36:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 174              		.loc 1 36 7 is_stmt 1 discriminator 4 view .LVU50
+  36:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 175              		.loc 1 36 36 is_stmt 0 discriminator 4 view .LVU51
+ 176 0034 FFF7FEFF 		bl	calloc
+ 177              	.LVL14:
+  37:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 178              		.loc 1 37 36 discriminator 4 view .LVU52
+ 179 0038 0421     		movs	r1, #4
+  36:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 180              		.loc 1 36 34 discriminator 4 view .LVU53
+ 181 003a 2062     		str	r0, [r4, #32]
+  37:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 182              		.loc 1 37 7 is_stmt 1 discriminator 4 view .LVU54
+  36:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 183              		.loc 1 36 36 is_stmt 0 discriminator 4 view .LVU55
+ 184 003c 0646     		mov	r6, r0
+ 185              	.LVL15:
+  37:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 186              		.loc 1 37 36 discriminator 4 view .LVU56
+ 187 003e 2846     		mov	r0, r5
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 6
+
+
+ 188 0040 FFF7FEFF 		bl	calloc
+ 189              	.LVL16:
+  38:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+ 190              		.loc 1 38 36 discriminator 4 view .LVU57
+ 191 0044 0421     		movs	r1, #4
+  37:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 192              		.loc 1 37 34 discriminator 4 view .LVU58
+ 193 0046 6062     		str	r0, [r4, #36]
+  38:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+ 194              		.loc 1 38 7 is_stmt 1 discriminator 4 view .LVU59
+  37:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 195              		.loc 1 37 36 is_stmt 0 discriminator 4 view .LVU60
+ 196 0048 0746     		mov	r7, r0
+ 197              	.LVL17:
+  38:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+ 198              		.loc 1 38 36 discriminator 4 view .LVU61
+ 199 004a 4846     		mov	r0, r9
+ 200 004c FFF7FEFF 		bl	calloc
+ 201              	.LVL18:
+ 202 0050 8046     		mov	r8, r0
+  39:lib/BTT/src/STFT.c ****       if(self->window           == NULL) return stft_destroy(self);
+ 203              		.loc 1 39 36 discriminator 4 view .LVU62
+ 204 0052 0421     		movs	r1, #4
+ 205 0054 4846     		mov	r0, r9
+  38:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+ 206              		.loc 1 38 34 discriminator 4 view .LVU63
+ 207 0056 C4F82880 		str	r8, [r4, #40]
+  39:lib/BTT/src/STFT.c ****       if(self->window           == NULL) return stft_destroy(self);
+ 208              		.loc 1 39 7 is_stmt 1 discriminator 4 view .LVU64
+  39:lib/BTT/src/STFT.c ****       if(self->window           == NULL) return stft_destroy(self);
+ 209              		.loc 1 39 36 is_stmt 0 discriminator 4 view .LVU65
+ 210 005a FFF7FEFF 		bl	calloc
+ 211              	.LVL19:
+  39:lib/BTT/src/STFT.c ****       if(self->window           == NULL) return stft_destroy(self);
+ 212              		.loc 1 39 34 discriminator 4 view .LVU66
+ 213 005e E062     		str	r0, [r4, #44]
+  40:lib/BTT/src/STFT.c ****       if(self->running_input    == NULL) return stft_destroy(self);
+ 214              		.loc 1 40 7 is_stmt 1 discriminator 4 view .LVU67
+  40:lib/BTT/src/STFT.c ****       if(self->running_input    == NULL) return stft_destroy(self);
+ 215              		.loc 1 40 9 is_stmt 0 discriminator 4 view .LVU68
+ 216 0060 76B1     		cbz	r6, .L39
+  41:lib/BTT/src/STFT.c ****       if(self->running_output   == NULL) return stft_destroy(self);
+ 217              		.loc 1 41 7 is_stmt 1 view .LVU69
+  41:lib/BTT/src/STFT.c ****       if(self->running_output   == NULL) return stft_destroy(self);
+ 218              		.loc 1 41 9 is_stmt 0 view .LVU70
+ 219 0062 6FB1     		cbz	r7, .L39
+  42:lib/BTT/src/STFT.c ****       if(self->real             == NULL) return stft_destroy(self);
+ 220              		.loc 1 42 7 is_stmt 1 view .LVU71
+  42:lib/BTT/src/STFT.c ****       if(self->real             == NULL) return stft_destroy(self);
+ 221              		.loc 1 42 9 is_stmt 0 view .LVU72
+ 222 0064 B8F1000F 		cmp	r8, #0
+ 223 0068 0AD0     		beq	.L39
+  43:lib/BTT/src/STFT.c ****   
+ 224              		.loc 1 43 7 is_stmt 1 view .LVU73
+  43:lib/BTT/src/STFT.c ****   
+ 225              		.loc 1 43 9 is_stmt 0 view .LVU74
+ 226 006a 48B1     		cbz	r0, .L39
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 7
+
+
+  46:lib/BTT/src/STFT.c ****   }
+ 227              		.loc 1 46 7 is_stmt 1 view .LVU75
+ 228 006c 2946     		mov	r1, r5
+ 229 006e 3046     		mov	r0, r6
+ 230 0070 FFF7FEFF 		bl	dft_init_blackman_window
+ 231              	.LVL20:
+ 232              	.L27:
+  49:lib/BTT/src/STFT.c **** 
+ 233              		.loc 1 49 1 is_stmt 0 view .LVU76
+ 234 0074 2046     		mov	r0, r4
+ 235 0076 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 236              	.LVL21:
+ 237              	.L40:
+  30:lib/BTT/src/STFT.c ****       self->overlap              = overlap;
+ 238              		.loc 1 30 82 discriminator 1 view .LVU77
+ 239 007a 06FB05F9 		mul	r9, r6, r5
+ 240 007e CEE7     		b	.L29
+ 241              	.LVL22:
+ 242              	.L39:
+  43:lib/BTT/src/STFT.c ****   
+ 243              		.loc 1 43 42 is_stmt 1 discriminator 1 view .LVU78
+  43:lib/BTT/src/STFT.c ****   
+ 244              		.loc 1 43 49 is_stmt 0 discriminator 1 view .LVU79
+ 245 0080 2046     		mov	r0, r4
+  49:lib/BTT/src/STFT.c **** 
+ 246              		.loc 1 49 1 discriminator 1 view .LVU80
+ 247 0082 BDE8F843 		pop	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 248              		.cfi_restore 14
+ 249              		.cfi_restore 9
+ 250              		.cfi_restore 8
+ 251              		.cfi_restore 7
+ 252              		.cfi_restore 6
+ 253              		.cfi_restore 5
+ 254              		.cfi_restore 4
+ 255              		.cfi_restore 3
+ 256              		.cfi_def_cfa_offset 0
+ 257              	.LVL23:
+  43:lib/BTT/src/STFT.c ****   
+ 258              		.loc 1 43 49 discriminator 1 view .LVU81
+ 259 0086 FFF7FEBF 		b	stft_destroy
+ 260              	.LVL24:
+  43:lib/BTT/src/STFT.c ****   
+ 261              		.loc 1 43 49 discriminator 1 view .LVU82
+ 262              		.cfi_endproc
+ 263              	.LFE320:
+ 265 008a 00BF     		.section	.text.stft_process,"ax",%progbits
+ 266              		.align	1
+ 267              		.p2align 2,,3
+ 268              		.global	stft_process
+ 269              		.syntax unified
+ 270              		.thumb
+ 271              		.thumb_func
+ 273              	stft_process:
+ 274              	.LVL25:
+ 275              	.LFB322:
+  69:lib/BTT/src/STFT.c **** 
+  70:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 8
+
+
+  71:lib/BTT/src/STFT.c **** /* resynthesized samples, if any, returned in real_input */
+  72:lib/BTT/src/STFT.c **** void stft_process(STFT* self, dft_sample_t* real_input, int len, stft_onprocess_t onprocess, void* 
+  73:lib/BTT/src/STFT.c **** {
+ 276              		.loc 1 73 1 is_stmt 1 view -0
+ 277              		.cfi_startproc
+ 278              		@ args = 4, pretend = 0, frame = 0
+ 279              		@ frame_needed = 0, uses_anonymous_args = 0
+  74:lib/BTT/src/STFT.c ****   int i, j;
+ 280              		.loc 1 74 3 view .LVU84
+  75:lib/BTT/src/STFT.c **** 
+  76:lib/BTT/src/STFT.c ****   for(i=0; i<len; i++)
+ 281              		.loc 1 76 3 view .LVU85
+ 282              		.loc 1 76 12 view .LVU86
+  73:lib/BTT/src/STFT.c ****   int i, j;
+ 283              		.loc 1 73 1 is_stmt 0 view .LVU87
+ 284 0000 2DE9F84F 		push	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 285              		.cfi_def_cfa_offset 40
+ 286              		.cfi_offset 3, -40
+ 287              		.cfi_offset 4, -36
+ 288              		.cfi_offset 5, -32
+ 289              		.cfi_offset 6, -28
+ 290              		.cfi_offset 7, -24
+ 291              		.cfi_offset 8, -20
+ 292              		.cfi_offset 9, -16
+ 293              		.cfi_offset 10, -12
+ 294              		.cfi_offset 11, -8
+ 295              		.cfi_offset 14, -4
+ 296              		.loc 1 76 3 view .LVU88
+ 297 0004 B2F1000A 		subs	r10, r2, #0
+  73:lib/BTT/src/STFT.c ****   int i, j;
+ 298              		.loc 1 73 1 view .LVU89
+ 299 0008 2DED028B 		vpush.64	{d8}
+ 300              		.cfi_def_cfa_offset 48
+ 301              		.cfi_offset 80, -48
+ 302              		.cfi_offset 81, -44
+ 303              		.loc 1 76 3 view .LVU90
+ 304 000c 40F38580 		ble	.L41
+ 305              		.loc 1 76 8 view .LVU91
+ 306 0010 0025     		movs	r5, #0
+ 307 0012 0446     		mov	r4, r0
+ 308 0014 1F46     		mov	r7, r3
+ 309 0016 0E46     		mov	r6, r1
+  77:lib/BTT/src/STFT.c ****     {
+  78:lib/BTT/src/STFT.c ****       self->running_input[self->input_index++] = real_input[i];
+  79:lib/BTT/src/STFT.c ****       self->input_index %= self->window_size;
+  80:lib/BTT/src/STFT.c ****     
+  81:lib/BTT/src/STFT.c ****       if(self->should_resynthesize)
+  82:lib/BTT/src/STFT.c ****         {
+  83:lib/BTT/src/STFT.c ****           real_input[i] = self->running_output[self->output_index];
+  84:lib/BTT/src/STFT.c ****           self->running_output[self->output_index++] = 0;
+ 310              		.loc 1 84 54 view .LVU92
+ 311 0018 9FED428A 		vldr.32	s16, .L64
+  85:lib/BTT/src/STFT.c ****           self->output_index %= self->fft_N;
+  86:lib/BTT/src/STFT.c ****         }
+  87:lib/BTT/src/STFT.c ****     
+  88:lib/BTT/src/STFT.c ****       if(++self->sample_counter == self->hop_size)
+  89:lib/BTT/src/STFT.c ****         {
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 9
+
+
+  90:lib/BTT/src/STFT.c ****           self->sample_counter = 0;
+ 312              		.loc 1 90 32 view .LVU93
+ 313 001c A946     		mov	r9, r5
+ 314 001e 02E0     		b	.L45
+ 315              	.LVL26:
+ 316              	.L52:
+  76:lib/BTT/src/STFT.c ****     {
+ 317              		.loc 1 76 19 is_stmt 1 view .LVU94
+  76:lib/BTT/src/STFT.c ****     {
+ 318              		.loc 1 76 20 is_stmt 0 view .LVU95
+ 319 0020 0135     		adds	r5, r5, #1
+ 320              	.LVL27:
+  76:lib/BTT/src/STFT.c ****     {
+ 321              		.loc 1 76 12 is_stmt 1 view .LVU96
+  76:lib/BTT/src/STFT.c ****     {
+ 322              		.loc 1 76 3 is_stmt 0 view .LVU97
+ 323 0022 AA45     		cmp	r10, r5
+ 324 0024 79D0     		beq	.L41
+ 325              	.LVL28:
+ 326              	.L45:
+  78:lib/BTT/src/STFT.c ****       self->input_index %= self->window_size;
+ 327              		.loc 1 78 7 is_stmt 1 view .LVU98
+  78:lib/BTT/src/STFT.c ****       self->input_index %= self->window_size;
+ 328              		.loc 1 78 31 is_stmt 0 view .LVU99
+ 329 0026 A369     		ldr	r3, [r4, #24]
+  78:lib/BTT/src/STFT.c ****       self->input_index %= self->window_size;
+ 330              		.loc 1 78 11 view .LVU100
+ 331 0028 D4F824E0 		ldr	lr, [r4, #36]
+  79:lib/BTT/src/STFT.c ****     
+ 332              		.loc 1 79 32 view .LVU101
+ 333 002c 6268     		ldr	r2, [r4, #4]
+  78:lib/BTT/src/STFT.c ****       self->input_index %= self->window_size;
+ 334              		.loc 1 78 60 view .LVU102
+ 335 002e 56F8040B 		ldr	r0, [r6], #4	@ float
+  78:lib/BTT/src/STFT.c ****       self->input_index %= self->window_size;
+ 336              		.loc 1 78 48 view .LVU103
+ 337 0032 0EEB8301 		add	r1, lr, r3, lsl #2
+  78:lib/BTT/src/STFT.c ****       self->input_index %= self->window_size;
+ 338              		.loc 1 78 44 view .LVU104
+ 339 0036 0133     		adds	r3, r3, #1
+  78:lib/BTT/src/STFT.c ****       self->input_index %= self->window_size;
+ 340              		.loc 1 78 48 view .LVU105
+ 341 0038 0860     		str	r0, [r1]	@ float
+  79:lib/BTT/src/STFT.c ****     
+ 342              		.loc 1 79 7 is_stmt 1 view .LVU106
+  81:lib/BTT/src/STFT.c ****         {
+ 343              		.loc 1 81 9 is_stmt 0 view .LVU107
+ 344 003a 2168     		ldr	r1, [r4]
+  79:lib/BTT/src/STFT.c ****     
+ 345              		.loc 1 79 25 view .LVU108
+ 346 003c 93FBF2F0 		sdiv	r0, r3, r2
+ 347 0040 02FB1033 		mls	r3, r2, r0, r3
+ 348 0044 A361     		str	r3, [r4, #24]
+  81:lib/BTT/src/STFT.c ****         {
+ 349              		.loc 1 81 7 is_stmt 1 view .LVU109
+  81:lib/BTT/src/STFT.c ****         {
+ 350              		.loc 1 81 9 is_stmt 0 view .LVU110
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 10
+
+
+ 351 0046 89B1     		cbz	r1, .L43
+  83:lib/BTT/src/STFT.c ****           self->running_output[self->output_index++] = 0;
+ 352              		.loc 1 83 11 is_stmt 1 view .LVU111
+  83:lib/BTT/src/STFT.c ****           self->running_output[self->output_index++] = 0;
+ 353              		.loc 1 83 52 is_stmt 0 view .LVU112
+ 354 0048 E069     		ldr	r0, [r4, #28]
+  83:lib/BTT/src/STFT.c ****           self->running_output[self->output_index++] = 0;
+ 355              		.loc 1 83 47 view .LVU113
+ 356 004a A16A     		ldr	r1, [r4, #40]
+  85:lib/BTT/src/STFT.c ****         }
+ 357              		.loc 1 85 30 view .LVU114
+ 358 004c D4F808C0 		ldr	ip, [r4, #8]
+  83:lib/BTT/src/STFT.c ****           self->running_output[self->output_index++] = 0;
+ 359              		.loc 1 83 47 view .LVU115
+ 360 0050 01EB8001 		add	r1, r1, r0, lsl #2
+  84:lib/BTT/src/STFT.c ****           self->output_index %= self->fft_N;
+ 361              		.loc 1 84 50 view .LVU116
+ 362 0054 0130     		adds	r0, r0, #1
+  85:lib/BTT/src/STFT.c ****         }
+ 363              		.loc 1 85 30 view .LVU117
+ 364 0056 90FBFCFB 		sdiv	fp, r0, ip
+ 365 005a 0CFB1B00 		mls	r0, ip, fp, r0
+  83:lib/BTT/src/STFT.c ****           self->running_output[self->output_index++] = 0;
+ 366              		.loc 1 83 47 view .LVU118
+ 367 005e D1F800C0 		ldr	ip, [r1]	@ float
+  83:lib/BTT/src/STFT.c ****           self->running_output[self->output_index++] = 0;
+ 368              		.loc 1 83 25 view .LVU119
+ 369 0062 46F804CC 		str	ip, [r6, #-4]	@ float
+  84:lib/BTT/src/STFT.c ****           self->output_index %= self->fft_N;
+ 370              		.loc 1 84 11 is_stmt 1 view .LVU120
+  84:lib/BTT/src/STFT.c ****           self->output_index %= self->fft_N;
+ 371              		.loc 1 84 54 is_stmt 0 view .LVU121
+ 372 0066 81ED008A 		vstr.32	s16, [r1]
+  85:lib/BTT/src/STFT.c ****         }
+ 373              		.loc 1 85 11 is_stmt 1 view .LVU122
+  85:lib/BTT/src/STFT.c ****         }
+ 374              		.loc 1 85 30 is_stmt 0 view .LVU123
+ 375 006a E061     		str	r0, [r4, #28]
+ 376              	.L43:
+  88:lib/BTT/src/STFT.c ****         {
+ 377              		.loc 1 88 7 is_stmt 1 view .LVU124
+  88:lib/BTT/src/STFT.c ****         {
+ 378              		.loc 1 88 9 is_stmt 0 view .LVU125
+ 379 006c D4E90401 		ldrd	r0, r1, [r4, #16]
+  88:lib/BTT/src/STFT.c ****         {
+ 380              		.loc 1 88 10 view .LVU126
+ 381 0070 0131     		adds	r1, r1, #1
+  88:lib/BTT/src/STFT.c ****         {
+ 382              		.loc 1 88 9 view .LVU127
+ 383 0072 8142     		cmp	r1, r0
+ 384 0074 6161     		str	r1, [r4, #20]
+ 385 0076 D3D1     		bne	.L52
+ 386              		.loc 1 90 11 is_stmt 1 view .LVU128
+  91:lib/BTT/src/STFT.c ****         
+  92:lib/BTT/src/STFT.c ****           for(j=0; j<self->window_size; j++)
+ 387              		.loc 1 92 11 is_stmt 0 view .LVU129
+ 388 0078 002A     		cmp	r2, #0
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 11
+
+
+  93:lib/BTT/src/STFT.c ****             {
+  94:lib/BTT/src/STFT.c ****               self->real[j] = self->running_input[(self->input_index+j) % self->window_size];
+ 389              		.loc 1 94 19 view .LVU130
+ 390 007a E06A     		ldr	r0, [r4, #44]
+  90:lib/BTT/src/STFT.c ****         
+ 391              		.loc 1 90 32 view .LVU131
+ 392 007c C4F81490 		str	r9, [r4, #20]
+  92:lib/BTT/src/STFT.c ****             {
+ 393              		.loc 1 92 11 is_stmt 1 view .LVU132
+ 394              	.LVL29:
+  92:lib/BTT/src/STFT.c ****             {
+ 395              		.loc 1 92 20 view .LVU133
+  92:lib/BTT/src/STFT.c ****             {
+ 396              		.loc 1 92 11 is_stmt 0 view .LVU134
+ 397 0080 0EDD     		ble	.L49
+ 398 0082 8446     		mov	ip, r0
+ 399 0084 00EB820B 		add	fp, r0, r2, lsl #2
+ 400              	.LVL30:
+ 401              	.L48:
+ 402              		.loc 1 94 15 is_stmt 1 discriminator 3 view .LVU135
+ 403              		.loc 1 94 73 is_stmt 0 discriminator 3 view .LVU136
+ 404 0088 93FBF2F1 		sdiv	r1, r3, r2
+ 405 008c 02FB1131 		mls	r1, r2, r1, r3
+ 406              		.loc 1 94 50 discriminator 3 view .LVU137
+ 407 0090 0133     		adds	r3, r3, #1
+ 408              		.loc 1 94 50 discriminator 3 view .LVU138
+ 409 0092 0EEB8101 		add	r1, lr, r1, lsl #2
+ 410 0096 0968     		ldr	r1, [r1]	@ float
+ 411              		.loc 1 94 29 discriminator 3 view .LVU139
+ 412 0098 4CF8041B 		str	r1, [ip], #4	@ float
+  92:lib/BTT/src/STFT.c ****             {
+ 413              		.loc 1 92 41 is_stmt 1 discriminator 3 view .LVU140
+  92:lib/BTT/src/STFT.c ****             {
+ 414              		.loc 1 92 20 discriminator 3 view .LVU141
+  92:lib/BTT/src/STFT.c ****             {
+ 415              		.loc 1 92 11 is_stmt 0 discriminator 3 view .LVU142
+ 416 009c E345     		cmp	fp, ip
+ 417 009e F3D1     		bne	.L48
+ 418              	.L49:
+  95:lib/BTT/src/STFT.c ****             }
+  96:lib/BTT/src/STFT.c **** 
+  97:lib/BTT/src/STFT.c ****           dft_apply_window(self->real, self->window, self->window_size);
+ 419              		.loc 1 97 11 is_stmt 1 view .LVU143
+ 420 00a0 216A     		ldr	r1, [r4, #32]
+ 421 00a2 FFF7FEFF 		bl	dft_apply_window
+ 422              	.LVL31:
+  98:lib/BTT/src/STFT.c ****           for(j=self->window_size; j<self->fft_N; j++)
+ 423              		.loc 1 98 11 view .LVU144
+  99:lib/BTT/src/STFT.c ****             {
+ 100:lib/BTT/src/STFT.c ****               self->real[j] = 0;
+ 424              		.loc 1 100 19 is_stmt 0 view .LVU145
+ 425 00a6 D4F82C80 		ldr	r8, [r4, #44]
+  98:lib/BTT/src/STFT.c ****           for(j=self->window_size; j<self->fft_N; j++)
+ 426              		.loc 1 98 42 view .LVU146
+ 427 00aa D4E9010B 		ldrd	r0, fp, [r4, #4]
+  98:lib/BTT/src/STFT.c ****           for(j=self->window_size; j<self->fft_N; j++)
+ 428              		.loc 1 98 11 view .LVU147
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 12
+
+
+ 429 00ae 5845     		cmp	r0, fp
+ 430 00b0 07DA     		bge	.L51
+ 431              		.loc 1 100 29 view .LVU148
+ 432 00b2 ABEB0002 		sub	r2, fp, r0
+ 433 00b6 0021     		movs	r1, #0
+ 434 00b8 08EB8000 		add	r0, r8, r0, lsl #2
+ 435 00bc 9200     		lsls	r2, r2, #2
+ 436 00be FFF7FEFF 		bl	memset
+ 437              	.LVL32:
+ 438              	.L51:
+ 101:lib/BTT/src/STFT.c ****             }
+ 102:lib/BTT/src/STFT.c ****           rdft_real_forward_dft(self->real, self->fft_N);
+ 439              		.loc 1 102 11 is_stmt 1 view .LVU149
+ 440 00c2 5946     		mov	r1, fp
+ 441 00c4 4046     		mov	r0, r8
+ 442 00c6 FFF7FEFF 		bl	rdft_real_forward_dft
+ 443              	.LVL33:
+ 103:lib/BTT/src/STFT.c ****           onprocess           (onprocess_self, self->real, self->fft_N);
+ 444              		.loc 1 103 11 view .LVU150
+ 445 00ca A268     		ldr	r2, [r4, #8]
+ 446 00cc E16A     		ldr	r1, [r4, #44]
+ 447 00ce 0C98     		ldr	r0, [sp, #48]
+ 448 00d0 B847     		blx	r7
+ 449              	.LVL34:
+ 104:lib/BTT/src/STFT.c ****           if(self->should_resynthesize)
+ 450              		.loc 1 104 11 view .LVU151
+ 451              		.loc 1 104 13 is_stmt 0 view .LVU152
+ 452 00d2 2368     		ldr	r3, [r4]
+ 453 00d4 002B     		cmp	r3, #0
+ 454 00d6 A3D0     		beq	.L52
+ 105:lib/BTT/src/STFT.c ****             {
+ 106:lib/BTT/src/STFT.c ****               rdft_real_inverse_dft(self->real, self->fft_N);
+ 455              		.loc 1 106 15 is_stmt 1 view .LVU153
+ 456 00d8 E06A     		ldr	r0, [r4, #44]
+ 457 00da A168     		ldr	r1, [r4, #8]
+ 458 00dc FFF7FEFF 		bl	rdft_real_inverse_dft
+ 459              	.LVL35:
+ 107:lib/BTT/src/STFT.c ****               for(j=0; j<self->fft_N; j++)
+ 460              		.loc 1 107 15 view .LVU154
+ 461              		.loc 1 107 24 view .LVU155
+ 462              		.loc 1 107 30 is_stmt 0 view .LVU156
+ 463 00e0 A068     		ldr	r0, [r4, #8]
+ 464              		.loc 1 107 15 view .LVU157
+ 465 00e2 0028     		cmp	r0, #0
+ 466 00e4 9CDD     		ble	.L52
+ 467 00e6 E269     		ldr	r2, [r4, #28]
+ 108:lib/BTT/src/STFT.c ****                 self->running_output[(self->output_index+j) % self->fft_N] += self->real[j];
+ 468              		.loc 1 108 21 view .LVU158
+ 469 00e8 D4E90AE1 		ldrd	lr, r1, [r4, #40]
+ 470 00ec 01EB800C 		add	ip, r1, r0, lsl #2
+ 471              	.LVL36:
+ 472              	.L53:
+ 473              		.loc 1 108 17 is_stmt 1 discriminator 3 view .LVU159
+ 474              		.loc 1 108 89 is_stmt 0 discriminator 3 view .LVU160
+ 475 00f0 B1EC017A 		vldmia.32	r1!, {s14}
+ 476              		.loc 1 108 61 discriminator 3 view .LVU161
+ 477 00f4 92FBF0F3 		sdiv	r3, r2, r0
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 13
+
+
+ 478 00f8 00FB1323 		mls	r3, r0, r3, r2
+ 107:lib/BTT/src/STFT.c ****               for(j=0; j<self->fft_N; j++)
+ 479              		.loc 1 107 15 discriminator 3 view .LVU162
+ 480 00fc 6145     		cmp	r1, ip
+ 481              		.loc 1 108 76 discriminator 3 view .LVU163
+ 482 00fe 02F10102 		add	r2, r2, #1
+ 483              	.LVL37:
+ 484              		.loc 1 108 76 discriminator 3 view .LVU164
+ 485 0102 0EEB8303 		add	r3, lr, r3, lsl #2
+ 486 0106 D3ED007A 		vldr.32	s15, [r3]
+ 487 010a 77EE877A 		vadd.f32	s15, s15, s14
+ 488 010e C3ED007A 		vstr.32	s15, [r3]
+ 107:lib/BTT/src/STFT.c ****               for(j=0; j<self->fft_N; j++)
+ 489              		.loc 1 107 39 is_stmt 1 discriminator 3 view .LVU165
+ 490              	.LVL38:
+ 107:lib/BTT/src/STFT.c ****               for(j=0; j<self->fft_N; j++)
+ 491              		.loc 1 107 24 discriminator 3 view .LVU166
+ 107:lib/BTT/src/STFT.c ****               for(j=0; j<self->fft_N; j++)
+ 492              		.loc 1 107 15 is_stmt 0 discriminator 3 view .LVU167
+ 493 0112 EDD1     		bne	.L53
+  76:lib/BTT/src/STFT.c ****     {
+ 494              		.loc 1 76 19 is_stmt 1 view .LVU168
+  76:lib/BTT/src/STFT.c ****     {
+ 495              		.loc 1 76 20 is_stmt 0 view .LVU169
+ 496 0114 0135     		adds	r5, r5, #1
+ 497              	.LVL39:
+  76:lib/BTT/src/STFT.c ****     {
+ 498              		.loc 1 76 12 is_stmt 1 view .LVU170
+  76:lib/BTT/src/STFT.c ****     {
+ 499              		.loc 1 76 3 is_stmt 0 view .LVU171
+ 500 0116 AA45     		cmp	r10, r5
+ 501 0118 85D1     		bne	.L45
+ 502              	.LVL40:
+ 503              	.L41:
+ 109:lib/BTT/src/STFT.c ****             }
+ 110:lib/BTT/src/STFT.c ****         }
+ 111:lib/BTT/src/STFT.c ****     }
+ 112:lib/BTT/src/STFT.c **** }
+ 504              		.loc 1 112 1 view .LVU172
+ 505 011a BDEC028B 		vldm	sp!, {d8}
+ 506              		.cfi_restore 80
+ 507              		.cfi_restore 81
+ 508              		.cfi_def_cfa_offset 40
+ 509 011e BDE8F88F 		pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 510              	.LVL41:
+ 511              	.L65:
+ 512              		.loc 1 112 1 view .LVU173
+ 513 0122 00BF     		.align	2
+ 514              	.L64:
+ 515 0124 00000000 		.word	0
+ 516              		.cfi_endproc
+ 517              	.LFE322:
+ 519              		.section	.text.stft_get_N,"ax",%progbits
+ 520              		.align	1
+ 521              		.p2align 2,,3
+ 522              		.global	stft_get_N
+ 523              		.syntax unified
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 14
+
+
+ 524              		.thumb
+ 525              		.thumb_func
+ 527              	stft_get_N:
+ 528              	.LVL42:
+ 529              	.LFB323:
+ 113:lib/BTT/src/STFT.c **** 
+ 114:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 115:lib/BTT/src/STFT.c **** int   stft_get_N (STFT* self)
+ 116:lib/BTT/src/STFT.c **** {
+ 530              		.loc 1 116 1 is_stmt 1 view -0
+ 531              		.cfi_startproc
+ 532              		@ args = 0, pretend = 0, frame = 0
+ 533              		@ frame_needed = 0, uses_anonymous_args = 0
+ 534              		@ link register save eliminated.
+ 117:lib/BTT/src/STFT.c ****   return self->fft_N;
+ 535              		.loc 1 117 3 view .LVU175
+ 118:lib/BTT/src/STFT.c **** }
+ 536              		.loc 1 118 1 is_stmt 0 view .LVU176
+ 537 0000 8068     		ldr	r0, [r0, #8]
+ 538              	.LVL43:
+ 539              		.loc 1 118 1 view .LVU177
+ 540 0002 7047     		bx	lr
+ 541              		.cfi_endproc
+ 542              	.LFE323:
+ 544              		.section	.text.stft_get_overlap,"ax",%progbits
+ 545              		.align	1
+ 546              		.p2align 2,,3
+ 547              		.global	stft_get_overlap
+ 548              		.syntax unified
+ 549              		.thumb
+ 550              		.thumb_func
+ 552              	stft_get_overlap:
+ 553              	.LVL44:
+ 554              	.LFB324:
+ 119:lib/BTT/src/STFT.c **** 
+ 120:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 121:lib/BTT/src/STFT.c **** int     stft_get_overlap (STFT* self)
+ 122:lib/BTT/src/STFT.c **** {
+ 555              		.loc 1 122 1 is_stmt 1 view -0
+ 556              		.cfi_startproc
+ 557              		@ args = 0, pretend = 0, frame = 0
+ 558              		@ frame_needed = 0, uses_anonymous_args = 0
+ 559              		@ link register save eliminated.
+ 123:lib/BTT/src/STFT.c ****   return self->overlap;
+ 560              		.loc 1 123 3 view .LVU179
+ 124:lib/BTT/src/STFT.c **** }
+ 561              		.loc 1 124 1 is_stmt 0 view .LVU180
+ 562 0000 C068     		ldr	r0, [r0, #12]
+ 563              	.LVL45:
+ 564              		.loc 1 124 1 view .LVU181
+ 565 0002 7047     		bx	lr
+ 566              		.cfi_endproc
+ 567              	.LFE324:
+ 569              		.section	.text.stft_get_hop,"ax",%progbits
+ 570              		.align	1
+ 571              		.p2align 2,,3
+ 572              		.global	stft_get_hop
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 15
+
+
+ 573              		.syntax unified
+ 574              		.thumb
+ 575              		.thumb_func
+ 577              	stft_get_hop:
+ 578              	.LVL46:
+ 579              	.LFB325:
+ 125:lib/BTT/src/STFT.c **** 
+ 126:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 127:lib/BTT/src/STFT.c **** int     stft_get_hop     (STFT* self)
+ 128:lib/BTT/src/STFT.c **** {
+ 580              		.loc 1 128 1 is_stmt 1 view -0
+ 581              		.cfi_startproc
+ 582              		@ args = 0, pretend = 0, frame = 0
+ 583              		@ frame_needed = 0, uses_anonymous_args = 0
+ 584              		@ link register save eliminated.
+ 129:lib/BTT/src/STFT.c ****   return self->hop_size;
+ 585              		.loc 1 129 3 view .LVU183
+ 130:lib/BTT/src/STFT.c **** }
+ 586              		.loc 1 130 1 is_stmt 0 view .LVU184
+ 587 0000 0069     		ldr	r0, [r0, #16]
+ 588              	.LVL47:
+ 589              		.loc 1 130 1 view .LVU185
+ 590 0002 7047     		bx	lr
+ 591              		.cfi_endproc
+ 592              	.LFE325:
+ 594              		.section	.text.two_stfts_destroy,"ax",%progbits
+ 595              		.align	1
+ 596              		.p2align 2,,3
+ 597              		.global	two_stfts_destroy
+ 598              		.syntax unified
+ 599              		.thumb
+ 600              		.thumb_func
+ 602              	two_stfts_destroy:
+ 603              	.LVL48:
+ 604              	.LFB327:
+ 131:lib/BTT/src/STFT.c **** 
+ 132:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 133:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 134:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 135:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 136:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 137:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 138:lib/BTT/src/STFT.c **** struct Opaque_TWO_STFTS_Struct
+ 139:lib/BTT/src/STFT.c **** {
+ 140:lib/BTT/src/STFT.c ****   int           should_resynthesize;
+ 141:lib/BTT/src/STFT.c ****   int           window_size;
+ 142:lib/BTT/src/STFT.c ****   int           fft_N;
+ 143:lib/BTT/src/STFT.c ****   int           overlap;
+ 144:lib/BTT/src/STFT.c ****   int           hop_size;
+ 145:lib/BTT/src/STFT.c ****   int           sample_counter;
+ 146:lib/BTT/src/STFT.c ****   int           input_index;
+ 147:lib/BTT/src/STFT.c ****   int           output_index;;
+ 148:lib/BTT/src/STFT.c ****   dft_sample_t* window;
+ 149:lib/BTT/src/STFT.c ****   dft_sample_t* running_input;
+ 150:lib/BTT/src/STFT.c ****   dft_sample_t* running_output;
+ 151:lib/BTT/src/STFT.c ****   dft_sample_t* real;
+ 152:lib/BTT/src/STFT.c ****   dft_sample_t* imag;
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 16
+
+
+ 153:lib/BTT/src/STFT.c ****   dft_sample_t* running_input_2;
+ 154:lib/BTT/src/STFT.c ****   dft_sample_t* running_output_2;
+ 155:lib/BTT/src/STFT.c ****   dft_sample_t* real_2;
+ 156:lib/BTT/src/STFT.c ****   dft_sample_t* imag_2;
+ 157:lib/BTT/src/STFT.c **** };
+ 158:lib/BTT/src/STFT.c **** 
+ 159:lib/BTT/src/STFT.c **** 
+ 160:lib/BTT/src/STFT.c **** 
+ 161:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 162:lib/BTT/src/STFT.c **** TWO_STFTS* two_stfts_new(int window_size /*power of 2 please*/, int overlap /* 1, 2, 4, 8 */, int s
+ 163:lib/BTT/src/STFT.c **** {
+ 164:lib/BTT/src/STFT.c ****   TWO_STFTS* self = calloc(1, sizeof(*self));
+ 165:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 166:lib/BTT/src/STFT.c ****     {
+ 167:lib/BTT/src/STFT.c ****       self->should_resynthesize  = should_resynthesize;
+ 168:lib/BTT/src/STFT.c ****       self->window_size          = window_size;
+ 169:lib/BTT/src/STFT.c ****       self->fft_N                = (should_resynthesize) ? overlap * window_size : window_size;
+ 170:lib/BTT/src/STFT.c ****       self->overlap              = overlap;
+ 171:lib/BTT/src/STFT.c ****       self->hop_size             = window_size / overlap;
+ 172:lib/BTT/src/STFT.c ****       self->sample_counter       = 0;
+ 173:lib/BTT/src/STFT.c **** 
+ 174:lib/BTT/src/STFT.c ****       self->input_index          = 0;
+ 175:lib/BTT/src/STFT.c ****       self->output_index         = 0;
+ 176:lib/BTT/src/STFT.c **** 
+ 177:lib/BTT/src/STFT.c ****       self->window               = calloc(self->window_size, sizeof(*(self->window)));
+ 178:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 179:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 180:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+ 181:lib/BTT/src/STFT.c ****       self->imag                 = calloc(self->fft_N      , sizeof(*(self->imag)));
+ 182:lib/BTT/src/STFT.c ****       self->running_input_2      = calloc(self->window_size, sizeof(*(self->running_input_2)));
+ 183:lib/BTT/src/STFT.c ****       self->running_output_2     = calloc(self->fft_N      , sizeof(*(self->running_output_2)));
+ 184:lib/BTT/src/STFT.c ****       self->real_2               = calloc(self->fft_N      , sizeof(*(self->real_2)));
+ 185:lib/BTT/src/STFT.c ****       self->imag_2               = calloc(self->fft_N      , sizeof(*(self->imag_2)));
+ 186:lib/BTT/src/STFT.c **** 
+ 187:lib/BTT/src/STFT.c ****       if(self->window           == NULL) return two_stfts_destroy(self);
+ 188:lib/BTT/src/STFT.c ****       if(self->running_input    == NULL) return two_stfts_destroy(self);
+ 189:lib/BTT/src/STFT.c ****       if(self->running_output   == NULL) return two_stfts_destroy(self);
+ 190:lib/BTT/src/STFT.c ****       if(self->real             == NULL) return two_stfts_destroy(self);
+ 191:lib/BTT/src/STFT.c ****       if(self->imag             == NULL) return two_stfts_destroy(self);
+ 192:lib/BTT/src/STFT.c ****       if(self->running_input_2  == NULL) return two_stfts_destroy(self);
+ 193:lib/BTT/src/STFT.c ****       if(self->running_output_2 == NULL) return two_stfts_destroy(self);
+ 194:lib/BTT/src/STFT.c ****       if(self->real_2           == NULL) return two_stfts_destroy(self);
+ 195:lib/BTT/src/STFT.c ****       if(self->imag_2           == NULL) return two_stfts_destroy(self);
+ 196:lib/BTT/src/STFT.c **** 
+ 197:lib/BTT/src/STFT.c ****       //no choice for now
+ 198:lib/BTT/src/STFT.c ****       dft_init_blackman_window(self->window, self->window_size);
+ 199:lib/BTT/src/STFT.c ****   }
+ 200:lib/BTT/src/STFT.c ****   
+ 201:lib/BTT/src/STFT.c ****   return self;
+ 202:lib/BTT/src/STFT.c **** }
+ 203:lib/BTT/src/STFT.c **** 
+ 204:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 205:lib/BTT/src/STFT.c **** TWO_STFTS* two_stfts_destroy(TWO_STFTS* self)
+ 206:lib/BTT/src/STFT.c **** {
+ 605              		.loc 1 206 1 is_stmt 1 view -0
+ 606              		.cfi_startproc
+ 607              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 17
+
+
+ 608              		@ frame_needed = 0, uses_anonymous_args = 0
+ 207:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 609              		.loc 1 207 3 view .LVU187
+ 610              		.loc 1 207 5 is_stmt 0 view .LVU188
+ 611 0000 50B3     		cbz	r0, .L111
+ 208:lib/BTT/src/STFT.c ****     {
+ 209:lib/BTT/src/STFT.c ****       if(self->window != NULL)
+ 612              		.loc 1 209 7 is_stmt 1 view .LVU189
+ 206:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 613              		.loc 1 206 1 is_stmt 0 view .LVU190
+ 614 0002 10B5     		push	{r4, lr}
+ 615              		.cfi_def_cfa_offset 8
+ 616              		.cfi_offset 4, -8
+ 617              		.cfi_offset 14, -4
+ 618 0004 0446     		mov	r4, r0
+ 619              		.loc 1 209 14 view .LVU191
+ 620 0006 006A     		ldr	r0, [r0, #32]
+ 621              	.LVL49:
+ 622              		.loc 1 209 9 view .LVU192
+ 623 0008 08B1     		cbz	r0, .L71
+ 210:lib/BTT/src/STFT.c ****         free(self->window);
+ 624              		.loc 1 210 9 is_stmt 1 view .LVU193
+ 625 000a FFF7FEFF 		bl	free
+ 626              	.LVL50:
+ 627              	.L71:
+ 211:lib/BTT/src/STFT.c ****       if(self->running_input != NULL)
+ 628              		.loc 1 211 7 view .LVU194
+ 629              		.loc 1 211 14 is_stmt 0 view .LVU195
+ 630 000e 606A     		ldr	r0, [r4, #36]
+ 631              		.loc 1 211 9 view .LVU196
+ 632 0010 08B1     		cbz	r0, .L72
+ 212:lib/BTT/src/STFT.c ****         free(self->running_input);
+ 633              		.loc 1 212 9 is_stmt 1 view .LVU197
+ 634 0012 FFF7FEFF 		bl	free
+ 635              	.LVL51:
+ 636              	.L72:
+ 213:lib/BTT/src/STFT.c ****       if(self->running_output != NULL)
+ 637              		.loc 1 213 7 view .LVU198
+ 638              		.loc 1 213 14 is_stmt 0 view .LVU199
+ 639 0016 A06A     		ldr	r0, [r4, #40]
+ 640              		.loc 1 213 9 view .LVU200
+ 641 0018 08B1     		cbz	r0, .L73
+ 214:lib/BTT/src/STFT.c ****         free(self->running_output);
+ 642              		.loc 1 214 9 is_stmt 1 view .LVU201
+ 643 001a FFF7FEFF 		bl	free
+ 644              	.LVL52:
+ 645              	.L73:
+ 215:lib/BTT/src/STFT.c ****       if(self->real != NULL)
+ 646              		.loc 1 215 7 view .LVU202
+ 647              		.loc 1 215 14 is_stmt 0 view .LVU203
+ 648 001e E06A     		ldr	r0, [r4, #44]
+ 649              		.loc 1 215 9 view .LVU204
+ 650 0020 08B1     		cbz	r0, .L74
+ 216:lib/BTT/src/STFT.c ****         free(self->real);
+ 651              		.loc 1 216 9 is_stmt 1 view .LVU205
+ 652 0022 FFF7FEFF 		bl	free
+ 653              	.LVL53:
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 18
+
+
+ 654              	.L74:
+ 217:lib/BTT/src/STFT.c ****       if(self->imag != NULL)
+ 655              		.loc 1 217 7 view .LVU206
+ 656              		.loc 1 217 14 is_stmt 0 view .LVU207
+ 657 0026 206B     		ldr	r0, [r4, #48]
+ 658              		.loc 1 217 9 view .LVU208
+ 659 0028 08B1     		cbz	r0, .L75
+ 218:lib/BTT/src/STFT.c ****         free(self->imag);
+ 660              		.loc 1 218 9 is_stmt 1 view .LVU209
+ 661 002a FFF7FEFF 		bl	free
+ 662              	.LVL54:
+ 663              	.L75:
+ 219:lib/BTT/src/STFT.c ****       if(self->running_input_2 != NULL)
+ 664              		.loc 1 219 7 view .LVU210
+ 665              		.loc 1 219 14 is_stmt 0 view .LVU211
+ 666 002e 606B     		ldr	r0, [r4, #52]
+ 667              		.loc 1 219 9 view .LVU212
+ 668 0030 08B1     		cbz	r0, .L76
+ 220:lib/BTT/src/STFT.c ****         free(self->running_input_2);
+ 669              		.loc 1 220 9 is_stmt 1 view .LVU213
+ 670 0032 FFF7FEFF 		bl	free
+ 671              	.LVL55:
+ 672              	.L76:
+ 221:lib/BTT/src/STFT.c ****       if(self->running_output_2 != NULL)
+ 673              		.loc 1 221 7 view .LVU214
+ 674              		.loc 1 221 14 is_stmt 0 view .LVU215
+ 675 0036 A06B     		ldr	r0, [r4, #56]
+ 676              		.loc 1 221 9 view .LVU216
+ 677 0038 08B1     		cbz	r0, .L77
+ 222:lib/BTT/src/STFT.c ****         free(self->running_output_2);
+ 678              		.loc 1 222 9 is_stmt 1 view .LVU217
+ 679 003a FFF7FEFF 		bl	free
+ 680              	.LVL56:
+ 681              	.L77:
+ 223:lib/BTT/src/STFT.c ****       if(self->real_2 != NULL)
+ 682              		.loc 1 223 7 view .LVU218
+ 683              		.loc 1 223 14 is_stmt 0 view .LVU219
+ 684 003e E06B     		ldr	r0, [r4, #60]
+ 685              		.loc 1 223 9 view .LVU220
+ 686 0040 08B1     		cbz	r0, .L78
+ 224:lib/BTT/src/STFT.c ****         free(self->real_2);
+ 687              		.loc 1 224 9 is_stmt 1 view .LVU221
+ 688 0042 FFF7FEFF 		bl	free
+ 689              	.LVL57:
+ 690              	.L78:
+ 225:lib/BTT/src/STFT.c ****       if(self->imag_2 != NULL)
+ 691              		.loc 1 225 7 view .LVU222
+ 692              		.loc 1 225 14 is_stmt 0 view .LVU223
+ 693 0046 206C     		ldr	r0, [r4, #64]
+ 694              		.loc 1 225 9 view .LVU224
+ 695 0048 08B1     		cbz	r0, .L79
+ 226:lib/BTT/src/STFT.c ****         free(self->imag_2);
+ 696              		.loc 1 226 9 is_stmt 1 view .LVU225
+ 697 004a FFF7FEFF 		bl	free
+ 698              	.LVL58:
+ 699              	.L79:
+ 227:lib/BTT/src/STFT.c ****       free(self);
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 19
+
+
+ 700              		.loc 1 227 7 view .LVU226
+ 701 004e 2046     		mov	r0, r4
+ 702 0050 FFF7FEFF 		bl	free
+ 703              	.LVL59:
+ 228:lib/BTT/src/STFT.c ****     }
+ 229:lib/BTT/src/STFT.c ****   return (TWO_STFTS*) NULL;
+ 704              		.loc 1 229 3 view .LVU227
+ 230:lib/BTT/src/STFT.c **** }
+ 705              		.loc 1 230 1 is_stmt 0 view .LVU228
+ 706 0054 0020     		movs	r0, #0
+ 707 0056 10BD     		pop	{r4, pc}
+ 708              	.LVL60:
+ 709              	.L111:
+ 710              		.cfi_def_cfa_offset 0
+ 711              		.cfi_restore 4
+ 712              		.cfi_restore 14
+ 229:lib/BTT/src/STFT.c **** }
+ 713              		.loc 1 229 3 is_stmt 1 view .LVU229
+ 714              		.loc 1 230 1 is_stmt 0 view .LVU230
+ 715 0058 0020     		movs	r0, #0
+ 716              	.LVL61:
+ 717              		.loc 1 230 1 view .LVU231
+ 718 005a 7047     		bx	lr
+ 719              		.cfi_endproc
+ 720              	.LFE327:
+ 722              		.section	.text.two_stfts_new,"ax",%progbits
+ 723              		.align	1
+ 724              		.p2align 2,,3
+ 725              		.global	two_stfts_new
+ 726              		.syntax unified
+ 727              		.thumb
+ 728              		.thumb_func
+ 730              	two_stfts_new:
+ 731              	.LVL62:
+ 732              	.LFB326:
+ 163:lib/BTT/src/STFT.c ****   TWO_STFTS* self = calloc(1, sizeof(*self));
+ 733              		.loc 1 163 1 is_stmt 1 view -0
+ 734              		.cfi_startproc
+ 735              		@ args = 0, pretend = 0, frame = 8
+ 736              		@ frame_needed = 0, uses_anonymous_args = 0
+ 164:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 737              		.loc 1 164 3 view .LVU233
+ 163:lib/BTT/src/STFT.c ****   TWO_STFTS* self = calloc(1, sizeof(*self));
+ 738              		.loc 1 163 1 is_stmt 0 view .LVU234
+ 739 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 740              		.cfi_def_cfa_offset 36
+ 741              		.cfi_offset 4, -36
+ 742              		.cfi_offset 5, -32
+ 743              		.cfi_offset 6, -28
+ 744              		.cfi_offset 7, -24
+ 745              		.cfi_offset 8, -20
+ 746              		.cfi_offset 9, -16
+ 747              		.cfi_offset 10, -12
+ 748              		.cfi_offset 11, -8
+ 749              		.cfi_offset 14, -4
+ 750 0004 0546     		mov	r5, r0
+ 751 0006 83B0     		sub	sp, sp, #12
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 20
+
+
+ 752              		.cfi_def_cfa_offset 48
+ 163:lib/BTT/src/STFT.c ****   TWO_STFTS* self = calloc(1, sizeof(*self));
+ 753              		.loc 1 163 1 view .LVU235
+ 754 0008 0F46     		mov	r7, r1
+ 164:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 755              		.loc 1 164 21 view .LVU236
+ 756 000a 0120     		movs	r0, #1
+ 757              	.LVL63:
+ 164:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 758              		.loc 1 164 21 view .LVU237
+ 759 000c 4421     		movs	r1, #68
+ 760              	.LVL64:
+ 163:lib/BTT/src/STFT.c ****   TWO_STFTS* self = calloc(1, sizeof(*self));
+ 761              		.loc 1 163 1 view .LVU238
+ 762 000e 1646     		mov	r6, r2
+ 164:lib/BTT/src/STFT.c ****   if(self != NULL)
+ 763              		.loc 1 164 21 view .LVU239
+ 764 0010 FFF7FEFF 		bl	calloc
+ 765              	.LVL65:
+ 165:lib/BTT/src/STFT.c ****     {
+ 766              		.loc 1 165 3 is_stmt 1 view .LVU240
+ 165:lib/BTT/src/STFT.c ****     {
+ 767              		.loc 1 165 5 is_stmt 0 view .LVU241
+ 768 0014 0446     		mov	r4, r0
+ 769 0016 0028     		cmp	r0, #0
+ 770 0018 5AD0     		beq	.L114
+ 167:lib/BTT/src/STFT.c ****       self->window_size          = window_size;
+ 771              		.loc 1 167 7 is_stmt 1 view .LVU242
+ 168:lib/BTT/src/STFT.c ****       self->fft_N                = (should_resynthesize) ? overlap * window_size : window_size;
+ 772              		.loc 1 168 34 is_stmt 0 view .LVU243
+ 773 001a C0E90065 		strd	r6, r5, [r0]
+ 169:lib/BTT/src/STFT.c ****       self->overlap              = overlap;
+ 774              		.loc 1 169 7 is_stmt 1 view .LVU244
+ 169:lib/BTT/src/STFT.c ****       self->overlap              = overlap;
+ 775              		.loc 1 169 82 is_stmt 0 view .LVU245
+ 776 001e 002E     		cmp	r6, #0
+ 777 0020 5AD1     		bne	.L132
+ 778 0022 2E46     		mov	r6, r5
+ 779              	.LVL66:
+ 780              	.L116:
+ 177:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 781              		.loc 1 177 36 discriminator 4 view .LVU246
+ 782 0024 0421     		movs	r1, #4
+ 783 0026 2846     		mov	r0, r5
+ 784              	.LVL67:
+ 171:lib/BTT/src/STFT.c ****       self->sample_counter       = 0;
+ 785              		.loc 1 171 48 discriminator 4 view .LVU247
+ 786 0028 95FBF7F3 		sdiv	r3, r5, r7
+ 171:lib/BTT/src/STFT.c ****       self->sample_counter       = 0;
+ 787              		.loc 1 171 34 discriminator 4 view .LVU248
+ 788 002c 2361     		str	r3, [r4, #16]
+ 172:lib/BTT/src/STFT.c **** 
+ 789              		.loc 1 172 34 discriminator 4 view .LVU249
+ 790 002e 0023     		movs	r3, #0
+ 170:lib/BTT/src/STFT.c ****       self->hop_size             = window_size / overlap;
+ 791              		.loc 1 170 34 discriminator 4 view .LVU250
+ 792 0030 C4E90267 		strd	r6, r7, [r4, #8]
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 21
+
+
+ 171:lib/BTT/src/STFT.c ****       self->sample_counter       = 0;
+ 793              		.loc 1 171 7 is_stmt 1 discriminator 4 view .LVU251
+ 172:lib/BTT/src/STFT.c **** 
+ 794              		.loc 1 172 7 discriminator 4 view .LVU252
+ 174:lib/BTT/src/STFT.c ****       self->output_index         = 0;
+ 795              		.loc 1 174 34 is_stmt 0 discriminator 4 view .LVU253
+ 796 0034 C4E90533 		strd	r3, r3, [r4, #20]
+ 175:lib/BTT/src/STFT.c **** 
+ 797              		.loc 1 175 7 is_stmt 1 discriminator 4 view .LVU254
+ 175:lib/BTT/src/STFT.c **** 
+ 798              		.loc 1 175 34 is_stmt 0 discriminator 4 view .LVU255
+ 799 0038 E361     		str	r3, [r4, #28]
+ 177:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 800              		.loc 1 177 7 is_stmt 1 discriminator 4 view .LVU256
+ 177:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 801              		.loc 1 177 36 is_stmt 0 discriminator 4 view .LVU257
+ 802 003a FFF7FEFF 		bl	calloc
+ 803              	.LVL68:
+ 178:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 804              		.loc 1 178 36 discriminator 4 view .LVU258
+ 805 003e 0421     		movs	r1, #4
+ 177:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 806              		.loc 1 177 34 discriminator 4 view .LVU259
+ 807 0040 2062     		str	r0, [r4, #32]
+ 178:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 808              		.loc 1 178 7 is_stmt 1 discriminator 4 view .LVU260
+ 177:lib/BTT/src/STFT.c ****       self->running_input        = calloc(self->window_size, sizeof(*(self->running_input)));
+ 809              		.loc 1 177 36 is_stmt 0 discriminator 4 view .LVU261
+ 810 0042 0746     		mov	r7, r0
+ 811              	.LVL69:
+ 178:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 812              		.loc 1 178 36 discriminator 4 view .LVU262
+ 813 0044 2846     		mov	r0, r5
+ 814 0046 FFF7FEFF 		bl	calloc
+ 815              	.LVL70:
+ 179:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+ 816              		.loc 1 179 36 discriminator 4 view .LVU263
+ 817 004a 0421     		movs	r1, #4
+ 178:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 818              		.loc 1 178 34 discriminator 4 view .LVU264
+ 819 004c 6062     		str	r0, [r4, #36]
+ 179:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+ 820              		.loc 1 179 7 is_stmt 1 discriminator 4 view .LVU265
+ 178:lib/BTT/src/STFT.c ****       self->running_output       = calloc(self->fft_N      , sizeof(*(self->running_output)));
+ 821              		.loc 1 178 36 is_stmt 0 discriminator 4 view .LVU266
+ 822 004e 8046     		mov	r8, r0
+ 179:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+ 823              		.loc 1 179 36 discriminator 4 view .LVU267
+ 824 0050 3046     		mov	r0, r6
+ 825 0052 FFF7FEFF 		bl	calloc
+ 826              	.LVL71:
+ 180:lib/BTT/src/STFT.c ****       self->imag                 = calloc(self->fft_N      , sizeof(*(self->imag)));
+ 827              		.loc 1 180 36 discriminator 4 view .LVU268
+ 828 0056 0421     		movs	r1, #4
+ 179:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+ 829              		.loc 1 179 34 discriminator 4 view .LVU269
+ 830 0058 A062     		str	r0, [r4, #40]
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 22
+
+
+ 180:lib/BTT/src/STFT.c ****       self->imag                 = calloc(self->fft_N      , sizeof(*(self->imag)));
+ 831              		.loc 1 180 7 is_stmt 1 discriminator 4 view .LVU270
+ 179:lib/BTT/src/STFT.c ****       self->real                 = calloc(self->fft_N      , sizeof(*(self->real)));
+ 832              		.loc 1 179 36 is_stmt 0 discriminator 4 view .LVU271
+ 833 005a 8346     		mov	fp, r0
+ 180:lib/BTT/src/STFT.c ****       self->imag                 = calloc(self->fft_N      , sizeof(*(self->imag)));
+ 834              		.loc 1 180 36 discriminator 4 view .LVU272
+ 835 005c 3046     		mov	r0, r6
+ 836 005e FFF7FEFF 		bl	calloc
+ 837              	.LVL72:
+ 181:lib/BTT/src/STFT.c ****       self->running_input_2      = calloc(self->window_size, sizeof(*(self->running_input_2)));
+ 838              		.loc 1 181 36 discriminator 4 view .LVU273
+ 839 0062 0421     		movs	r1, #4
+ 180:lib/BTT/src/STFT.c ****       self->imag                 = calloc(self->fft_N      , sizeof(*(self->imag)));
+ 840              		.loc 1 180 34 discriminator 4 view .LVU274
+ 841 0064 E062     		str	r0, [r4, #44]
+ 181:lib/BTT/src/STFT.c ****       self->running_input_2      = calloc(self->window_size, sizeof(*(self->running_input_2)));
+ 842              		.loc 1 181 7 is_stmt 1 discriminator 4 view .LVU275
+ 180:lib/BTT/src/STFT.c ****       self->imag                 = calloc(self->fft_N      , sizeof(*(self->imag)));
+ 843              		.loc 1 180 36 is_stmt 0 discriminator 4 view .LVU276
+ 844 0066 8246     		mov	r10, r0
+ 181:lib/BTT/src/STFT.c ****       self->running_input_2      = calloc(self->window_size, sizeof(*(self->running_input_2)));
+ 845              		.loc 1 181 36 discriminator 4 view .LVU277
+ 846 0068 3046     		mov	r0, r6
+ 847 006a FFF7FEFF 		bl	calloc
+ 848              	.LVL73:
+ 182:lib/BTT/src/STFT.c ****       self->running_output_2     = calloc(self->fft_N      , sizeof(*(self->running_output_2)));
+ 849              		.loc 1 182 36 discriminator 4 view .LVU278
+ 850 006e 0421     		movs	r1, #4
+ 181:lib/BTT/src/STFT.c ****       self->running_input_2      = calloc(self->window_size, sizeof(*(self->running_input_2)));
+ 851              		.loc 1 181 34 discriminator 4 view .LVU279
+ 852 0070 2063     		str	r0, [r4, #48]
+ 182:lib/BTT/src/STFT.c ****       self->running_output_2     = calloc(self->fft_N      , sizeof(*(self->running_output_2)));
+ 853              		.loc 1 182 7 is_stmt 1 discriminator 4 view .LVU280
+ 181:lib/BTT/src/STFT.c ****       self->running_input_2      = calloc(self->window_size, sizeof(*(self->running_input_2)));
+ 854              		.loc 1 181 36 is_stmt 0 discriminator 4 view .LVU281
+ 855 0072 8146     		mov	r9, r0
+ 182:lib/BTT/src/STFT.c ****       self->running_output_2     = calloc(self->fft_N      , sizeof(*(self->running_output_2)));
+ 856              		.loc 1 182 36 discriminator 4 view .LVU282
+ 857 0074 2846     		mov	r0, r5
+ 858 0076 FFF7FEFF 		bl	calloc
+ 859              	.LVL74:
+ 183:lib/BTT/src/STFT.c ****       self->real_2               = calloc(self->fft_N      , sizeof(*(self->real_2)));
+ 860              		.loc 1 183 36 discriminator 4 view .LVU283
+ 861 007a 0421     		movs	r1, #4
+ 182:lib/BTT/src/STFT.c ****       self->running_output_2     = calloc(self->fft_N      , sizeof(*(self->running_output_2)));
+ 862              		.loc 1 182 34 discriminator 4 view .LVU284
+ 863 007c 6063     		str	r0, [r4, #52]
+ 864 007e 0190     		str	r0, [sp, #4]
+ 183:lib/BTT/src/STFT.c ****       self->real_2               = calloc(self->fft_N      , sizeof(*(self->real_2)));
+ 865              		.loc 1 183 7 is_stmt 1 discriminator 4 view .LVU285
+ 183:lib/BTT/src/STFT.c ****       self->real_2               = calloc(self->fft_N      , sizeof(*(self->real_2)));
+ 866              		.loc 1 183 36 is_stmt 0 discriminator 4 view .LVU286
+ 867 0080 3046     		mov	r0, r6
+ 868 0082 FFF7FEFF 		bl	calloc
+ 869              	.LVL75:
+ 184:lib/BTT/src/STFT.c ****       self->imag_2               = calloc(self->fft_N      , sizeof(*(self->imag_2)));
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 23
+
+
+ 870              		.loc 1 184 36 discriminator 4 view .LVU287
+ 871 0086 0421     		movs	r1, #4
+ 183:lib/BTT/src/STFT.c ****       self->real_2               = calloc(self->fft_N      , sizeof(*(self->real_2)));
+ 872              		.loc 1 183 34 discriminator 4 view .LVU288
+ 873 0088 A063     		str	r0, [r4, #56]
+ 874 008a 0090     		str	r0, [sp]
+ 184:lib/BTT/src/STFT.c ****       self->imag_2               = calloc(self->fft_N      , sizeof(*(self->imag_2)));
+ 875              		.loc 1 184 7 is_stmt 1 discriminator 4 view .LVU289
+ 184:lib/BTT/src/STFT.c ****       self->imag_2               = calloc(self->fft_N      , sizeof(*(self->imag_2)));
+ 876              		.loc 1 184 36 is_stmt 0 discriminator 4 view .LVU290
+ 877 008c 3046     		mov	r0, r6
+ 878 008e FFF7FEFF 		bl	calloc
+ 879              	.LVL76:
+ 880 0092 0146     		mov	r1, r0
+ 185:lib/BTT/src/STFT.c **** 
+ 881              		.loc 1 185 36 discriminator 4 view .LVU291
+ 882 0094 3046     		mov	r0, r6
+ 184:lib/BTT/src/STFT.c ****       self->imag_2               = calloc(self->fft_N      , sizeof(*(self->imag_2)));
+ 883              		.loc 1 184 34 discriminator 4 view .LVU292
+ 884 0096 E163     		str	r1, [r4, #60]
+ 185:lib/BTT/src/STFT.c **** 
+ 885              		.loc 1 185 7 is_stmt 1 discriminator 4 view .LVU293
+ 184:lib/BTT/src/STFT.c ****       self->imag_2               = calloc(self->fft_N      , sizeof(*(self->imag_2)));
+ 886              		.loc 1 184 36 is_stmt 0 discriminator 4 view .LVU294
+ 887 0098 0E46     		mov	r6, r1
+ 185:lib/BTT/src/STFT.c **** 
+ 888              		.loc 1 185 36 discriminator 4 view .LVU295
+ 889 009a 0421     		movs	r1, #4
+ 890 009c FFF7FEFF 		bl	calloc
+ 891              	.LVL77:
+ 185:lib/BTT/src/STFT.c **** 
+ 892              		.loc 1 185 34 discriminator 4 view .LVU296
+ 893 00a0 2064     		str	r0, [r4, #64]
+ 187:lib/BTT/src/STFT.c ****       if(self->running_input    == NULL) return two_stfts_destroy(self);
+ 894              		.loc 1 187 7 is_stmt 1 discriminator 4 view .LVU297
+ 187:lib/BTT/src/STFT.c ****       if(self->running_input    == NULL) return two_stfts_destroy(self);
+ 895              		.loc 1 187 9 is_stmt 0 discriminator 4 view .LVU298
+ 896 00a2 DDE90032 		ldrd	r3, r2, [sp]
+ 897 00a6 D7B1     		cbz	r7, .L131
+ 188:lib/BTT/src/STFT.c ****       if(self->running_output   == NULL) return two_stfts_destroy(self);
+ 898              		.loc 1 188 7 is_stmt 1 view .LVU299
+ 188:lib/BTT/src/STFT.c ****       if(self->running_output   == NULL) return two_stfts_destroy(self);
+ 899              		.loc 1 188 9 is_stmt 0 view .LVU300
+ 900 00a8 B8F1000F 		cmp	r8, #0
+ 901 00ac 17D0     		beq	.L131
+ 189:lib/BTT/src/STFT.c ****       if(self->real             == NULL) return two_stfts_destroy(self);
+ 902              		.loc 1 189 7 is_stmt 1 view .LVU301
+ 189:lib/BTT/src/STFT.c ****       if(self->real             == NULL) return two_stfts_destroy(self);
+ 903              		.loc 1 189 9 is_stmt 0 view .LVU302
+ 904 00ae BBF1000F 		cmp	fp, #0
+ 905 00b2 14D0     		beq	.L131
+ 190:lib/BTT/src/STFT.c ****       if(self->imag             == NULL) return two_stfts_destroy(self);
+ 906              		.loc 1 190 7 is_stmt 1 view .LVU303
+ 190:lib/BTT/src/STFT.c ****       if(self->imag             == NULL) return two_stfts_destroy(self);
+ 907              		.loc 1 190 9 is_stmt 0 view .LVU304
+ 908 00b4 BAF1000F 		cmp	r10, #0
+ 909 00b8 11D0     		beq	.L131
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 24
+
+
+ 191:lib/BTT/src/STFT.c ****       if(self->running_input_2  == NULL) return two_stfts_destroy(self);
+ 910              		.loc 1 191 7 is_stmt 1 view .LVU305
+ 191:lib/BTT/src/STFT.c ****       if(self->running_input_2  == NULL) return two_stfts_destroy(self);
+ 911              		.loc 1 191 9 is_stmt 0 view .LVU306
+ 912 00ba B9F1000F 		cmp	r9, #0
+ 913 00be 0ED0     		beq	.L131
+ 192:lib/BTT/src/STFT.c ****       if(self->running_output_2 == NULL) return two_stfts_destroy(self);
+ 914              		.loc 1 192 7 is_stmt 1 view .LVU307
+ 192:lib/BTT/src/STFT.c ****       if(self->running_output_2 == NULL) return two_stfts_destroy(self);
+ 915              		.loc 1 192 9 is_stmt 0 view .LVU308
+ 916 00c0 6AB1     		cbz	r2, .L131
+ 193:lib/BTT/src/STFT.c ****       if(self->real_2           == NULL) return two_stfts_destroy(self);
+ 917              		.loc 1 193 7 is_stmt 1 view .LVU309
+ 193:lib/BTT/src/STFT.c ****       if(self->real_2           == NULL) return two_stfts_destroy(self);
+ 918              		.loc 1 193 9 is_stmt 0 view .LVU310
+ 919 00c2 63B1     		cbz	r3, .L131
+ 194:lib/BTT/src/STFT.c ****       if(self->imag_2           == NULL) return two_stfts_destroy(self);
+ 920              		.loc 1 194 7 is_stmt 1 view .LVU311
+ 194:lib/BTT/src/STFT.c ****       if(self->imag_2           == NULL) return two_stfts_destroy(self);
+ 921              		.loc 1 194 9 is_stmt 0 view .LVU312
+ 922 00c4 5EB1     		cbz	r6, .L131
+ 195:lib/BTT/src/STFT.c **** 
+ 923              		.loc 1 195 7 is_stmt 1 view .LVU313
+ 195:lib/BTT/src/STFT.c **** 
+ 924              		.loc 1 195 9 is_stmt 0 view .LVU314
+ 925 00c6 50B1     		cbz	r0, .L131
+ 198:lib/BTT/src/STFT.c ****   }
+ 926              		.loc 1 198 7 is_stmt 1 view .LVU315
+ 927 00c8 2946     		mov	r1, r5
+ 928 00ca 3846     		mov	r0, r7
+ 929 00cc FFF7FEFF 		bl	dft_init_blackman_window
+ 930              	.LVL78:
+ 931              	.L114:
+ 202:lib/BTT/src/STFT.c **** 
+ 932              		.loc 1 202 1 is_stmt 0 view .LVU316
+ 933 00d0 2046     		mov	r0, r4
+ 934 00d2 03B0     		add	sp, sp, #12
+ 935              		.cfi_remember_state
+ 936              		.cfi_def_cfa_offset 36
+ 937              		@ sp needed
+ 938 00d4 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 939              	.LVL79:
+ 940              	.L132:
+ 941              		.cfi_restore_state
+ 169:lib/BTT/src/STFT.c ****       self->overlap              = overlap;
+ 942              		.loc 1 169 82 discriminator 1 view .LVU317
+ 943 00d8 07FB05F6 		mul	r6, r7, r5
+ 944              	.LVL80:
+ 169:lib/BTT/src/STFT.c ****       self->overlap              = overlap;
+ 945              		.loc 1 169 82 discriminator 1 view .LVU318
+ 946 00dc A2E7     		b	.L116
+ 947              	.LVL81:
+ 948              	.L131:
+ 195:lib/BTT/src/STFT.c **** 
+ 949              		.loc 1 195 42 is_stmt 1 discriminator 1 view .LVU319
+ 195:lib/BTT/src/STFT.c **** 
+ 950              		.loc 1 195 49 is_stmt 0 discriminator 1 view .LVU320
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 25
+
+
+ 951 00de 2046     		mov	r0, r4
+ 202:lib/BTT/src/STFT.c **** 
+ 952              		.loc 1 202 1 discriminator 1 view .LVU321
+ 953 00e0 03B0     		add	sp, sp, #12
+ 954              		.cfi_def_cfa_offset 36
+ 955              		@ sp needed
+ 956 00e2 BDE8F04F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 957              		.cfi_restore 14
+ 958              		.cfi_restore 11
+ 959              		.cfi_restore 10
+ 960              		.cfi_restore 9
+ 961              		.cfi_restore 8
+ 962              		.cfi_restore 7
+ 963              		.cfi_restore 6
+ 964              		.cfi_restore 5
+ 965              		.cfi_restore 4
+ 966              		.cfi_def_cfa_offset 0
+ 967              	.LVL82:
+ 195:lib/BTT/src/STFT.c **** 
+ 968              		.loc 1 195 49 discriminator 1 view .LVU322
+ 969 00e6 FFF7FEBF 		b	two_stfts_destroy
+ 970              	.LVL83:
+ 195:lib/BTT/src/STFT.c **** 
+ 971              		.loc 1 195 49 discriminator 1 view .LVU323
+ 972              		.cfi_endproc
+ 973              	.LFE326:
+ 975 00ea 00BF     		.section	.text.two_stfts_process,"ax",%progbits
+ 976              		.align	1
+ 977              		.p2align 2,,3
+ 978              		.global	two_stfts_process
+ 979              		.syntax unified
+ 980              		.thumb
+ 981              		.thumb_func
+ 983              	two_stfts_process:
+ 984              	.LVL84:
+ 985              	.LFB328:
+ 231:lib/BTT/src/STFT.c **** 
+ 232:lib/BTT/src/STFT.c **** /*--------------------------------------------------------------------*/
+ 233:lib/BTT/src/STFT.c **** void two_stfts_process(TWO_STFTS* self, dft_sample_t* real_input, dft_sample_t* real_input_2, int l
+ 234:lib/BTT/src/STFT.c **** {
+ 986              		.loc 1 234 1 is_stmt 1 view -0
+ 987              		.cfi_startproc
+ 988              		@ args = 12, pretend = 0, frame = 40
+ 989              		@ frame_needed = 0, uses_anonymous_args = 0
+ 235:lib/BTT/src/STFT.c ****   int i, j;
+ 990              		.loc 1 235 3 view .LVU325
+ 236:lib/BTT/src/STFT.c **** 
+ 237:lib/BTT/src/STFT.c ****   for(i=0; i<len; i++)
+ 991              		.loc 1 237 3 view .LVU326
+ 992              		.loc 1 237 12 view .LVU327
+ 234:lib/BTT/src/STFT.c ****   int i, j;
+ 993              		.loc 1 234 1 is_stmt 0 view .LVU328
+ 994 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 995              		.cfi_def_cfa_offset 36
+ 996              		.cfi_offset 4, -36
+ 997              		.cfi_offset 5, -32
+ 998              		.cfi_offset 6, -28
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 26
+
+
+ 999              		.cfi_offset 7, -24
+ 1000              		.cfi_offset 8, -20
+ 1001              		.cfi_offset 9, -16
+ 1002              		.cfi_offset 10, -12
+ 1003              		.cfi_offset 11, -8
+ 1004              		.cfi_offset 14, -4
+ 1005              		.loc 1 237 3 view .LVU329
+ 1006 0004 002B     		cmp	r3, #0
+ 234:lib/BTT/src/STFT.c ****   int i, j;
+ 1007              		.loc 1 234 1 view .LVU330
+ 1008 0006 2DED028B 		vpush.64	{d8}
+ 1009              		.cfi_def_cfa_offset 44
+ 1010              		.cfi_offset 80, -44
+ 1011              		.cfi_offset 81, -40
+ 1012 000a 8DB0     		sub	sp, sp, #52
+ 1013              		.cfi_def_cfa_offset 96
+ 1014              		.loc 1 237 3 view .LVU331
+ 1015 000c 0493     		str	r3, [sp, #16]
+ 1016 000e 40F35F81 		ble	.L133
+ 1017 0012 8346     		mov	fp, r0
+ 1018 0014 8946     		mov	r9, r1
+ 1019              		.loc 1 237 8 view .LVU332
+ 1020 0016 4FF0000A 		mov	r10, #0
+ 238:lib/BTT/src/STFT.c ****     {
+ 239:lib/BTT/src/STFT.c ****       self->running_input[self->input_index] = real_input[i];
+ 240:lib/BTT/src/STFT.c ****       self->running_input_2[self->input_index] = real_input_2[i];
+ 241:lib/BTT/src/STFT.c ****       ++self->input_index; self->input_index %= self->window_size;
+ 242:lib/BTT/src/STFT.c ****     
+ 243:lib/BTT/src/STFT.c ****       //?
+ 244:lib/BTT/src/STFT.c ****       if(self->should_resynthesize)
+ 245:lib/BTT/src/STFT.c ****         {
+ 246:lib/BTT/src/STFT.c ****           real_input[i] = self->running_output[self->output_index];
+ 247:lib/BTT/src/STFT.c ****           self->running_output[self->output_index] = 0;
+ 1021              		.loc 1 247 52 view .LVU333
+ 1022 001a 9FEDC48A 		vldr.32	s16, .L178
+ 1023 001e 0392     		str	r2, [sp, #12]
+ 1024 0020 05E0     		b	.L138
+ 1025              	.LVL85:
+ 1026              	.L148:
+ 237:lib/BTT/src/STFT.c ****     {
+ 1027              		.loc 1 237 19 is_stmt 1 view .LVU334
+ 237:lib/BTT/src/STFT.c ****     {
+ 1028              		.loc 1 237 20 is_stmt 0 view .LVU335
+ 1029 0022 0AF1010A 		add	r10, r10, #1
+ 1030              	.LVL86:
+ 237:lib/BTT/src/STFT.c ****     {
+ 1031              		.loc 1 237 12 is_stmt 1 view .LVU336
+ 237:lib/BTT/src/STFT.c ****     {
+ 1032              		.loc 1 237 3 is_stmt 0 view .LVU337
+ 1033 0026 049B     		ldr	r3, [sp, #16]
+ 1034 0028 5345     		cmp	r3, r10
+ 1035 002a 00F05181 		beq	.L133
+ 1036              	.LVL87:
+ 1037              	.L138:
+ 239:lib/BTT/src/STFT.c ****       self->running_input_2[self->input_index] = real_input_2[i];
+ 1038              		.loc 1 239 7 is_stmt 1 view .LVU338
+ 239:lib/BTT/src/STFT.c ****       self->running_input_2[self->input_index] = real_input_2[i];
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 27
+
+
+ 1039              		.loc 1 239 31 is_stmt 0 view .LVU339
+ 1040 002e DBF81810 		ldr	r1, [fp, #24]
+ 239:lib/BTT/src/STFT.c ****       self->running_input_2[self->input_index] = real_input_2[i];
+ 1041              		.loc 1 239 11 view .LVU340
+ 1042 0032 DBF82450 		ldr	r5, [fp, #36]
+ 239:lib/BTT/src/STFT.c ****       self->running_input_2[self->input_index] = real_input_2[i];
+ 1043              		.loc 1 239 58 view .LVU341
+ 1044 0036 59F8044B 		ldr	r4, [r9], #4	@ float
+ 241:lib/BTT/src/STFT.c ****     
+ 1045              		.loc 1 241 7 view .LVU342
+ 1046 003a 4B1C     		adds	r3, r1, #1
+ 241:lib/BTT/src/STFT.c ****     
+ 1047              		.loc 1 241 53 view .LVU343
+ 1048 003c DBF80420 		ldr	r2, [fp, #4]
+ 239:lib/BTT/src/STFT.c ****       self->running_input_2[self->input_index] = real_input_2[i];
+ 1049              		.loc 1 239 46 view .LVU344
+ 1050 0040 05EB8100 		add	r0, r5, r1, lsl #2
+ 240:lib/BTT/src/STFT.c ****       ++self->input_index; self->input_index %= self->window_size;
+ 1051              		.loc 1 240 11 view .LVU345
+ 1052 0044 DBF83460 		ldr	r6, [fp, #52]
+ 239:lib/BTT/src/STFT.c ****       self->running_input_2[self->input_index] = real_input_2[i];
+ 1053              		.loc 1 239 46 view .LVU346
+ 1054 0048 0460     		str	r4, [r0]	@ float
+ 240:lib/BTT/src/STFT.c ****       ++self->input_index; self->input_index %= self->window_size;
+ 1055              		.loc 1 240 7 is_stmt 1 view .LVU347
+ 240:lib/BTT/src/STFT.c ****       ++self->input_index; self->input_index %= self->window_size;
+ 1056              		.loc 1 240 62 is_stmt 0 view .LVU348
+ 1057 004a 039C     		ldr	r4, [sp, #12]
+ 240:lib/BTT/src/STFT.c ****       ++self->input_index; self->input_index %= self->window_size;
+ 1058              		.loc 1 240 48 view .LVU349
+ 1059 004c 06EB8101 		add	r1, r6, r1, lsl #2
+ 241:lib/BTT/src/STFT.c ****     
+ 1060              		.loc 1 241 46 view .LVU350
+ 1061 0050 93FBF2F0 		sdiv	r0, r3, r2
+ 1062 0054 02FB1033 		mls	r3, r2, r0, r3
+ 240:lib/BTT/src/STFT.c ****       ++self->input_index; self->input_index %= self->window_size;
+ 1063              		.loc 1 240 62 view .LVU351
+ 1064 0058 54F8040B 		ldr	r0, [r4], #4	@ float
+ 240:lib/BTT/src/STFT.c ****       ++self->input_index; self->input_index %= self->window_size;
+ 1065              		.loc 1 240 48 view .LVU352
+ 1066 005c 0860     		str	r0, [r1]	@ float
+ 241:lib/BTT/src/STFT.c ****     
+ 1067              		.loc 1 241 7 is_stmt 1 view .LVU353
+ 241:lib/BTT/src/STFT.c ****     
+ 1068              		.loc 1 241 28 view .LVU354
+ 244:lib/BTT/src/STFT.c ****         {
+ 1069              		.loc 1 244 9 is_stmt 0 view .LVU355
+ 1070 005e DBF80010 		ldr	r1, [fp]
+ 240:lib/BTT/src/STFT.c ****       ++self->input_index; self->input_index %= self->window_size;
+ 1071              		.loc 1 240 62 view .LVU356
+ 1072 0062 0394     		str	r4, [sp, #12]
+ 241:lib/BTT/src/STFT.c ****     
+ 1073              		.loc 1 241 46 view .LVU357
+ 1074 0064 CBF81830 		str	r3, [fp, #24]
+ 244:lib/BTT/src/STFT.c ****         {
+ 1075              		.loc 1 244 7 is_stmt 1 view .LVU358
+ 244:lib/BTT/src/STFT.c ****         {
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 28
+
+
+ 1076              		.loc 1 244 9 is_stmt 0 view .LVU359
+ 1077 0068 F9B1     		cbz	r1, .L135
+ 246:lib/BTT/src/STFT.c ****           self->running_output[self->output_index] = 0;
+ 1078              		.loc 1 246 11 is_stmt 1 view .LVU360
+ 246:lib/BTT/src/STFT.c ****           self->running_output[self->output_index] = 0;
+ 1079              		.loc 1 246 52 is_stmt 0 view .LVU361
+ 1080 006a DBF81C00 		ldr	r0, [fp, #28]
+ 246:lib/BTT/src/STFT.c ****           self->running_output[self->output_index] = 0;
+ 1081              		.loc 1 246 47 view .LVU362
+ 1082 006e DBF82810 		ldr	r1, [fp, #40]
+ 1083 0072 8400     		lsls	r4, r0, #2
+ 1084 0074 01EB8001 		add	r1, r1, r0, lsl #2
+ 1085 0078 0F68     		ldr	r7, [r1]	@ float
+ 246:lib/BTT/src/STFT.c ****           self->running_output[self->output_index] = 0;
+ 1086              		.loc 1 246 25 view .LVU363
+ 1087 007a 49F8047C 		str	r7, [r9, #-4]	@ float
+ 1088              		.loc 1 247 11 is_stmt 1 view .LVU364
+ 1089              		.loc 1 247 52 is_stmt 0 view .LVU365
+ 1090 007e 81ED008A 		vstr.32	s16, [r1]
+ 248:lib/BTT/src/STFT.c ****           if(two_inverses)
+ 1091              		.loc 1 248 11 is_stmt 1 view .LVU366
+ 1092              		.loc 1 248 13 is_stmt 0 view .LVU367
+ 1093 0082 1899     		ldr	r1, [sp, #96]
+ 1094 0084 41B1     		cbz	r1, .L136
+ 249:lib/BTT/src/STFT.c ****             {
+ 250:lib/BTT/src/STFT.c ****               real_input_2[i] = self->running_output_2[self->output_index];
+ 1095              		.loc 1 250 15 is_stmt 1 view .LVU368
+ 1096              		.loc 1 250 55 is_stmt 0 view .LVU369
+ 1097 0086 DBF83810 		ldr	r1, [fp, #56]
+ 1098              		.loc 1 250 31 view .LVU370
+ 1099 008a 039F     		ldr	r7, [sp, #12]
+ 1100              		.loc 1 250 55 view .LVU371
+ 1101 008c 2144     		add	r1, r1, r4
+ 1102 008e 0C68     		ldr	r4, [r1]	@ float
+ 1103              		.loc 1 250 31 view .LVU372
+ 1104 0090 47F8044C 		str	r4, [r7, #-4]	@ float
+ 251:lib/BTT/src/STFT.c ****               self->running_output_2[self->output_index] = 0;
+ 1105              		.loc 1 251 15 is_stmt 1 view .LVU373
+ 1106              		.loc 1 251 58 is_stmt 0 view .LVU374
+ 1107 0094 81ED008A 		vstr.32	s16, [r1]
+ 1108              	.L136:
+ 252:lib/BTT/src/STFT.c ****             }
+ 253:lib/BTT/src/STFT.c ****           ++self->output_index; self->output_index %= self->fft_N;
+ 1109              		.loc 1 253 11 is_stmt 1 view .LVU375
+ 1110              		.loc 1 253 33 view .LVU376
+ 1111              		.loc 1 253 11 is_stmt 0 view .LVU377
+ 1112 0098 0130     		adds	r0, r0, #1
+ 1113              		.loc 1 253 52 view .LVU378
+ 1114 009a DBF80810 		ldr	r1, [fp, #8]
+ 1115 009e 90FBF1F4 		sdiv	r4, r0, r1
+ 1116 00a2 01FB1400 		mls	r0, r1, r4, r0
+ 1117 00a6 CBF81C00 		str	r0, [fp, #28]
+ 1118              	.L135:
+ 254:lib/BTT/src/STFT.c ****         }
+ 255:lib/BTT/src/STFT.c **** 
+ 256:lib/BTT/src/STFT.c ****       ++self->sample_counter;
+ 1119              		.loc 1 256 7 is_stmt 1 view .LVU379
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 29
+
+
+ 1120 00aa DBF81410 		ldr	r1, [fp, #20]
+ 257:lib/BTT/src/STFT.c **** 
+ 258:lib/BTT/src/STFT.c ****       //new dft if necessary
+ 259:lib/BTT/src/STFT.c ****       if(self->sample_counter == self->hop_size)
+ 1121              		.loc 1 259 9 is_stmt 0 view .LVU380
+ 1122 00ae DBF81000 		ldr	r0, [fp, #16]
+ 256:lib/BTT/src/STFT.c **** 
+ 1123              		.loc 1 256 7 view .LVU381
+ 1124 00b2 0131     		adds	r1, r1, #1
+ 1125              		.loc 1 259 9 view .LVU382
+ 1126 00b4 8142     		cmp	r1, r0
+ 256:lib/BTT/src/STFT.c **** 
+ 1127              		.loc 1 256 7 view .LVU383
+ 1128 00b6 CBF81410 		str	r1, [fp, #20]
+ 1129              		.loc 1 259 7 is_stmt 1 view .LVU384
+ 1130              		.loc 1 259 9 is_stmt 0 view .LVU385
+ 1131 00ba B2D1     		bne	.L148
+ 260:lib/BTT/src/STFT.c ****         {
+ 261:lib/BTT/src/STFT.c ****           self->sample_counter = 0;
+ 1132              		.loc 1 261 11 is_stmt 1 view .LVU386
+ 1133              		.loc 1 261 32 is_stmt 0 view .LVU387
+ 1134 00bc 0021     		movs	r1, #0
+ 262:lib/BTT/src/STFT.c ****         
+ 263:lib/BTT/src/STFT.c ****           for(j=0; j<self->window_size; j++)
+ 1135              		.loc 1 263 11 view .LVU388
+ 1136 00be 8A42     		cmp	r2, r1
+ 261:lib/BTT/src/STFT.c ****         
+ 1137              		.loc 1 261 32 view .LVU389
+ 1138 00c0 CBF81410 		str	r1, [fp, #20]
+ 1139              		.loc 1 263 11 is_stmt 1 view .LVU390
+ 1140              	.LVL88:
+ 1141              		.loc 1 263 20 view .LVU391
+ 1142              		.loc 1 263 11 is_stmt 0 view .LVU392
+ 1143 00c4 40F31781 		ble	.L140
+ 264:lib/BTT/src/STFT.c ****             {
+ 265:lib/BTT/src/STFT.c ****               self->real[j] = self->running_input[(self->input_index+j) % self->window_size];
+ 1144              		.loc 1 265 19 view .LVU393
+ 1145 00c8 DBF82C10 		ldr	r1, [fp, #44]
+ 1146 00cc DBF830E0 		ldr	lr, [fp, #48]
+ 1147 00d0 DBF83CC0 		ldr	ip, [fp, #60]
+ 1148 00d4 0C46     		mov	r4, r1
+ 1149 00d6 DBF84070 		ldr	r7, [fp, #64]
+ 1150 00da 01EB8200 		add	r0, r1, r2, lsl #2
+ 1151 00de 0591     		str	r1, [sp, #20]
+ 1152              	.LVL89:
+ 1153              	.L141:
+ 1154              		.loc 1 265 15 is_stmt 1 discriminator 3 view .LVU394
+ 1155              		.loc 1 265 73 is_stmt 0 discriminator 3 view .LVU395
+ 1156 00e0 93FBF2F1 		sdiv	r1, r3, r2
+ 1157 00e4 02FB1131 		mls	r1, r2, r1, r3
+ 1158              		.loc 1 265 50 discriminator 3 view .LVU396
+ 1159 00e8 0133     		adds	r3, r3, #1
+ 1160              		.loc 1 265 50 discriminator 3 view .LVU397
+ 1161 00ea 05EB8108 		add	r8, r5, r1, lsl #2
+ 266:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 267:lib/BTT/src/STFT.c ****               self->real_2[j] = self->running_input_2[(self->input_index+j) % self->window_size];
+ 1162              		.loc 1 267 54 discriminator 3 view .LVU398
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 30
+
+
+ 1163 00ee 06EB8101 		add	r1, r6, r1, lsl #2
+ 265:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 1164              		.loc 1 265 50 discriminator 3 view .LVU399
+ 1165 00f2 D8F80080 		ldr	r8, [r8]	@ float
+ 265:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 1166              		.loc 1 265 29 discriminator 3 view .LVU400
+ 1167 00f6 44F8048B 		str	r8, [r4], #4	@ float
+ 266:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 1168              		.loc 1 266 15 is_stmt 1 discriminator 3 view .LVU401
+ 263:lib/BTT/src/STFT.c ****             {
+ 1169              		.loc 1 263 11 is_stmt 0 discriminator 3 view .LVU402
+ 1170 00fa 8442     		cmp	r4, r0
+ 266:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 1171              		.loc 1 266 29 discriminator 3 view .LVU403
+ 1172 00fc AEEC018A 		vstmia.32	lr!, {s16}
+ 1173              		.loc 1 267 15 is_stmt 1 discriminator 3 view .LVU404
+ 1174              		.loc 1 267 54 is_stmt 0 discriminator 3 view .LVU405
+ 1175 0100 0968     		ldr	r1, [r1]	@ float
+ 1176              		.loc 1 267 31 discriminator 3 view .LVU406
+ 1177 0102 4CF8041B 		str	r1, [ip], #4	@ float
+ 268:lib/BTT/src/STFT.c ****               self->imag_2[j] = 0;
+ 1178              		.loc 1 268 15 is_stmt 1 discriminator 3 view .LVU407
+ 1179              		.loc 1 268 31 is_stmt 0 discriminator 3 view .LVU408
+ 1180 0106 A7EC018A 		vstmia.32	r7!, {s16}
+ 263:lib/BTT/src/STFT.c ****             {
+ 1181              		.loc 1 263 41 is_stmt 1 discriminator 3 view .LVU409
+ 263:lib/BTT/src/STFT.c ****             {
+ 1182              		.loc 1 263 20 discriminator 3 view .LVU410
+ 263:lib/BTT/src/STFT.c ****             {
+ 1183              		.loc 1 263 11 is_stmt 0 discriminator 3 view .LVU411
+ 1184 010a E9D1     		bne	.L141
+ 1185              	.L142:
+ 269:lib/BTT/src/STFT.c ****             }
+ 270:lib/BTT/src/STFT.c **** 
+ 271:lib/BTT/src/STFT.c ****           dft_apply_window(self->real, self->window, self->window_size);
+ 1186              		.loc 1 271 11 is_stmt 1 view .LVU412
+ 1187 010c 0598     		ldr	r0, [sp, #20]
+ 1188 010e DBF82010 		ldr	r1, [fp, #32]
+ 1189 0112 FFF7FEFF 		bl	dft_apply_window
+ 1190              	.LVL90:
+ 272:lib/BTT/src/STFT.c ****           dft_apply_window(self->real_2, self->window, self->window_size);
+ 1191              		.loc 1 272 11 view .LVU413
+ 1192 0116 DBF80420 		ldr	r2, [fp, #4]
+ 1193 011a DBF82010 		ldr	r1, [fp, #32]
+ 1194 011e DBF83C00 		ldr	r0, [fp, #60]
+ 1195 0122 FFF7FEFF 		bl	dft_apply_window
+ 1196              	.LVL91:
+ 273:lib/BTT/src/STFT.c ****           for(j=self->window_size; j<self->fft_N; j++)
+ 1197              		.loc 1 273 11 view .LVU414
+ 274:lib/BTT/src/STFT.c ****             {
+ 275:lib/BTT/src/STFT.c ****               self->real[j] = 0;
+ 1198              		.loc 1 275 19 is_stmt 0 view .LVU415
+ 1199 0126 DBF82C80 		ldr	r8, [fp, #44]
+ 273:lib/BTT/src/STFT.c ****           for(j=self->window_size; j<self->fft_N; j++)
+ 1200              		.loc 1 273 42 view .LVU416
+ 1201 012a DBE90124 		ldrd	r2, r4, [fp, #4]
+ 273:lib/BTT/src/STFT.c ****           for(j=self->window_size; j<self->fft_N; j++)
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 31
+
+
+ 1202              		.loc 1 273 11 view .LVU417
+ 1203 012e A242     		cmp	r2, r4
+ 1204 0130 80F2E580 		bge	.L143
+ 276:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 277:lib/BTT/src/STFT.c ****               self->real_2[j] = 0;
+ 1205              		.loc 1 277 19 view .LVU418
+ 1206 0134 DBF83C30 		ldr	r3, [fp, #60]
+ 1207 0138 08EB840C 		add	ip, r8, r4, lsl #2
+ 276:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 1208              		.loc 1 276 19 view .LVU419
+ 1209 013c DBF83010 		ldr	r1, [fp, #48]
+ 1210 0140 03EB8200 		add	r0, r3, r2, lsl #2
+ 1211              		.loc 1 277 19 view .LVU420
+ 1212 0144 0793     		str	r3, [sp, #28]
+ 1213 0146 03EB8403 		add	r3, r3, r4, lsl #2
+ 276:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 1214              		.loc 1 276 19 view .LVU421
+ 1215 014a 0691     		str	r1, [sp, #24]
+ 1216 014c 0590     		str	r0, [sp, #20]
+ 1217 014e 01EB8407 		add	r7, r1, r4, lsl #2
+ 1218 0152 01EB8205 		add	r5, r1, r2, lsl #2
+ 1219 0156 1946     		mov	r1, r3
+ 1220 0158 059B     		ldr	r3, [sp, #20]
+ 1221 015a 08EB8200 		add	r0, r8, r2, lsl #2
+ 278:lib/BTT/src/STFT.c ****               self->imag_2[j] = 0;
+ 1222              		.loc 1 278 19 view .LVU422
+ 1223 015e DBF84060 		ldr	r6, [fp, #64]
+ 1224 0162 6345     		cmp	r3, ip
+ 1225 0164 0991     		str	r1, [sp, #36]
+ 1226 0166 0896     		str	r6, [sp, #32]
+ 1227 0168 34BF     		ite	cc
+ 1228 016a 0023     		movcc	r3, #0
+ 1229 016c 0123     		movcs	r3, #1
+ 1230 016e 8142     		cmp	r1, r0
+ 1231 0170 8CBF     		ite	hi
+ 1232 0172 9E46     		movhi	lr, r3
+ 1233 0174 43F0010E 		orrls	lr, r3, #1
+ 1234 0178 3346     		mov	r3, r6
+ 1235 017a 6545     		cmp	r5, ip
+ 1236 017c 38BF     		it	cc
+ 1237 017e B842     		cmpcc	r0, r7
+ 1238 0180 06EB8206 		add	r6, r6, r2, lsl #2
+ 1239 0184 03EB8403 		add	r3, r3, r4, lsl #2
+ 1240 0188 1946     		mov	r1, r3
+ 1241 018a 2CBF     		ite	cs
+ 1242 018c 0123     		movcs	r3, #1
+ 1243 018e 0023     		movcc	r3, #0
+ 1244 0190 8842     		cmp	r0, r1
+ 1245 0192 38BF     		it	cc
+ 1246 0194 6645     		cmpcc	r6, ip
+ 1247 0196 0B91     		str	r1, [sp, #44]
+ 1248 0198 0EEA0303 		and	r3, lr, r3
+ 1249 019c 2CBF     		ite	cs
+ 1250 019e 4FF0010E 		movcs	lr, #1
+ 1251 01a2 4FF0000E 		movcc	lr, #0
+ 1252 01a6 03EA0E03 		and	r3, r3, lr
+ 1253 01aa 0A93     		str	r3, [sp, #40]
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 32
+
+
+ 1254 01ac 059B     		ldr	r3, [sp, #20]
+ 1255 01ae BB42     		cmp	r3, r7
+ 1256 01b0 0A9B     		ldr	r3, [sp, #40]
+ 1257 01b2 34BF     		ite	cc
+ 1258 01b4 4FF0000E 		movcc	lr, #0
+ 1259 01b8 4FF0010E 		movcs	lr, #1
+ 1260 01bc 8D42     		cmp	r5, r1
+ 1261 01be 38BF     		it	cc
+ 1262 01c0 BE42     		cmpcc	r6, r7
+ 1263 01c2 0999     		ldr	r1, [sp, #36]
+ 1264 01c4 2CBF     		ite	cs
+ 1265 01c6 0127     		movcs	r7, #1
+ 1266 01c8 0027     		movcc	r7, #0
+ 1267 01ca A942     		cmp	r1, r5
+ 1268 01cc 98BF     		it	ls
+ 1269 01ce 4EF0010E 		orrls	lr, lr, #1
+ 1270 01d2 03EA0E03 		and	r3, r3, lr
+ 1271 01d6 3B42     		tst	r3, r7
+ 1272 01d8 00F09B80 		beq	.L144
+ 1273 01dc 0B46     		mov	r3, r1
+ 1274 01de 059F     		ldr	r7, [sp, #20]
+ 1275 01e0 0B99     		ldr	r1, [sp, #44]
+ 1276 01e2 8F42     		cmp	r7, r1
+ 1277 01e4 38BF     		it	cc
+ 1278 01e6 9E42     		cmpcc	r6, r3
+ 1279 01e8 C0F09380 		bcc	.L144
+ 275:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 1280              		.loc 1 275 29 view .LVU423
+ 1281 01ec A21A     		subs	r2, r4, r2
+ 1282 01ee 0021     		movs	r1, #0
+ 1283 01f0 9200     		lsls	r2, r2, #2
+ 1284 01f2 0992     		str	r2, [sp, #36]
+ 1285 01f4 FFF7FEFF 		bl	memset
+ 1286              	.LVL92:
+ 1287              		.loc 1 278 31 view .LVU424
+ 1288 01f8 099A     		ldr	r2, [sp, #36]
+ 1289 01fa 0021     		movs	r1, #0
+ 1290 01fc 3046     		mov	r0, r6
+ 1291 01fe FFF7FEFF 		bl	memset
+ 1292              	.LVL93:
+ 277:lib/BTT/src/STFT.c ****               self->imag_2[j] = 0;
+ 1293              		.loc 1 277 31 view .LVU425
+ 1294 0202 099A     		ldr	r2, [sp, #36]
+ 1295 0204 0021     		movs	r1, #0
+ 1296 0206 0598     		ldr	r0, [sp, #20]
+ 1297 0208 FFF7FEFF 		bl	memset
+ 1298              	.LVL94:
+ 276:lib/BTT/src/STFT.c ****               self->real_2[j] = 0;
+ 1299              		.loc 1 276 29 view .LVU426
+ 1300 020c 099A     		ldr	r2, [sp, #36]
+ 1301 020e 2846     		mov	r0, r5
+ 1302 0210 0021     		movs	r1, #0
+ 1303 0212 FFF7FEFF 		bl	memset
+ 1304              	.LVL95:
+ 1305              	.L145:
+ 279:lib/BTT/src/STFT.c ****             }
+ 280:lib/BTT/src/STFT.c **** 
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 33
+
+
+ 281:lib/BTT/src/STFT.c ****           dft_2_real_forward_dfts  (self->real, self->real_2, self->imag, self->imag_2, self->fft_N
+ 1306              		.loc 1 281 11 is_stmt 1 view .LVU427
+ 1307 0216 089B     		ldr	r3, [sp, #32]
+ 1308 0218 4046     		mov	r0, r8
+ 1309 021a 0094     		str	r4, [sp]
+ 1310 021c DDE90621 		ldrd	r2, r1, [sp, #24]
+ 1311 0220 FFF7FEFF 		bl	dft_2_real_forward_dfts
+ 1312              	.LVL96:
+ 282:lib/BTT/src/STFT.c ****           onprocess                  (onprocess_self, self->real, self->real_2, self->imag, self->i
+ 1313              		.loc 1 282 11 view .LVU428
+ 1314 0224 DBF80830 		ldr	r3, [fp, #8]
+ 1315 0228 0193     		str	r3, [sp, #4]
+ 1316 022a DBF84030 		ldr	r3, [fp, #64]
+ 1317 022e DDE91940 		ldrd	r4, r0, [sp, #100]
+ 1318 0232 0093     		str	r3, [sp]
+ 1319 0234 DBF83030 		ldr	r3, [fp, #48]
+ 1320 0238 DBF83C20 		ldr	r2, [fp, #60]
+ 1321 023c DBF82C10 		ldr	r1, [fp, #44]
+ 1322 0240 A047     		blx	r4
+ 1323              	.LVL97:
+ 283:lib/BTT/src/STFT.c **** 
+ 284:lib/BTT/src/STFT.c ****           if(self->should_resynthesize)
+ 1324              		.loc 1 284 11 view .LVU429
+ 1325              		.loc 1 284 13 is_stmt 0 view .LVU430
+ 1326 0242 DBF80030 		ldr	r3, [fp]
+ 1327 0246 002B     		cmp	r3, #0
+ 1328 0248 3FF4EBAE 		beq	.L148
+ 285:lib/BTT/src/STFT.c ****             {
+ 286:lib/BTT/src/STFT.c ****               if(two_inverses)
+ 1329              		.loc 1 286 15 is_stmt 1 view .LVU431
+ 1330              		.loc 1 286 17 is_stmt 0 view .LVU432
+ 1331 024c 189B     		ldr	r3, [sp, #96]
+ 1332 024e 002B     		cmp	r3, #0
+ 1333 0250 43D1     		bne	.L177
+ 287:lib/BTT/src/STFT.c ****                 dft_2_real_inverse_dfts(self->real, self->real_2, self->imag, self->imag_2, self->f
+ 288:lib/BTT/src/STFT.c ****               else
+ 289:lib/BTT/src/STFT.c ****                 dft_real_inverse_dft(self->real, self->imag, self->fft_N);
+ 1334              		.loc 1 289 17 is_stmt 1 view .LVU433
+ 1335 0252 DBF80820 		ldr	r2, [fp, #8]
+ 1336 0256 DBE90B01 		ldrd	r0, r1, [fp, #44]
+ 1337 025a FFF7FEFF 		bl	dft_real_inverse_dft
+ 1338              	.LVL98:
+ 1339              	.L151:
+ 290:lib/BTT/src/STFT.c ****         
+ 291:lib/BTT/src/STFT.c ****               for(j=0; j<self->fft_N; j++)
+ 1340              		.loc 1 291 24 discriminator 1 view .LVU434
+ 1341              		.loc 1 291 30 is_stmt 0 discriminator 1 view .LVU435
+ 1342 025e DBF80810 		ldr	r1, [fp, #8]
+ 1343              		.loc 1 291 15 discriminator 1 view .LVU436
+ 1344 0262 0029     		cmp	r1, #0
+ 1345 0264 7FF7DDAE 		ble	.L148
+ 292:lib/BTT/src/STFT.c ****                 {
+ 293:lib/BTT/src/STFT.c ****                   self->running_output[(self->output_index+j) % self->fft_N] += self->real[j];
+ 1346              		.loc 1 293 23 view .LVU437
+ 1347 0268 DBF82860 		ldr	r6, [fp, #40]
+ 1348 026c 8D00     		lsls	r5, r1, #2
+ 1349 026e DBF81C30 		ldr	r3, [fp, #28]
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 34
+
+
+ 1350              		.loc 1 293 85 view .LVU438
+ 1351 0272 0022     		movs	r2, #0
+ 1352 0274 DBF82C40 		ldr	r4, [fp, #44]
+ 1353 0278 DDF860C0 		ldr	ip, [sp, #96]
+ 1354              	.LVL99:
+ 1355              	.L153:
+ 1356              		.loc 1 293 19 is_stmt 1 view .LVU439
+ 294:lib/BTT/src/STFT.c ****                   if(two_inverses)
+ 295:lib/BTT/src/STFT.c ****                     self->running_output_2[(self->output_index+j) % self->fft_N] += self->real_2[j]
+ 1357              		.loc 1 295 21 view .LVU440
+ 291:lib/BTT/src/STFT.c ****                 {
+ 1358              		.loc 1 291 39 view .LVU441
+ 291:lib/BTT/src/STFT.c ****                 {
+ 1359              		.loc 1 291 24 view .LVU442
+ 293:lib/BTT/src/STFT.c ****                   if(two_inverses)
+ 1360              		.loc 1 293 91 is_stmt 0 view .LVU443
+ 1361 027c B4EC017A 		vldmia.32	r4!, {s14}
+ 293:lib/BTT/src/STFT.c ****                   if(two_inverses)
+ 1362              		.loc 1 293 63 view .LVU444
+ 1363 0280 93FBF1F0 		sdiv	r0, r3, r1
+ 1364 0284 01FB1030 		mls	r0, r1, r0, r3
+ 293:lib/BTT/src/STFT.c ****                   if(two_inverses)
+ 1365              		.loc 1 293 78 view .LVU445
+ 1366 0288 0133     		adds	r3, r3, #1
+ 1367              	.LVL100:
+ 293:lib/BTT/src/STFT.c ****                   if(two_inverses)
+ 1368              		.loc 1 293 78 view .LVU446
+ 1369 028a 06EB8007 		add	r7, r6, r0, lsl #2
+ 1370 028e 8000     		lsls	r0, r0, #2
+ 1371 0290 D7ED007A 		vldr.32	s15, [r7]
+ 1372 0294 77EE877A 		vadd.f32	s15, s15, s14
+ 1373 0298 C7ED007A 		vstr.32	s15, [r7]
+ 294:lib/BTT/src/STFT.c ****                   if(two_inverses)
+ 1374              		.loc 1 294 19 is_stmt 1 view .LVU447
+ 294:lib/BTT/src/STFT.c ****                   if(two_inverses)
+ 1375              		.loc 1 294 21 is_stmt 0 view .LVU448
+ 1376 029c BCF1000F 		cmp	ip, #0
+ 1377 02a0 0DD0     		beq	.L152
+ 1378              		.loc 1 295 82 view .LVU449
+ 1379 02a2 DBF83870 		ldr	r7, [fp, #56]
+ 1380 02a6 3844     		add	r0, r0, r7
+ 1381              		.loc 1 295 97 view .LVU450
+ 1382 02a8 DBF83C70 		ldr	r7, [fp, #60]
+ 1383 02ac 1744     		add	r7, r7, r2
+ 1384              		.loc 1 295 82 view .LVU451
+ 1385 02ae D0ED007A 		vldr.32	s15, [r0]
+ 1386 02b2 97ED007A 		vldr.32	s14, [r7]
+ 1387 02b6 77EE877A 		vadd.f32	s15, s15, s14
+ 1388 02ba C0ED007A 		vstr.32	s15, [r0]
+ 1389              	.L152:
+ 291:lib/BTT/src/STFT.c ****                 {
+ 1390              		.loc 1 291 15 discriminator 2 view .LVU452
+ 1391 02be 0432     		adds	r2, r2, #4
+ 1392 02c0 9542     		cmp	r5, r2
+ 1393 02c2 DBD1     		bne	.L153
+ 237:lib/BTT/src/STFT.c ****     {
+ 1394              		.loc 1 237 19 is_stmt 1 view .LVU453
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 35
+
+
+ 237:lib/BTT/src/STFT.c ****     {
+ 1395              		.loc 1 237 20 is_stmt 0 view .LVU454
+ 1396 02c4 0AF1010A 		add	r10, r10, #1
+ 1397              	.LVL101:
+ 237:lib/BTT/src/STFT.c ****     {
+ 1398              		.loc 1 237 12 is_stmt 1 view .LVU455
+ 237:lib/BTT/src/STFT.c ****     {
+ 1399              		.loc 1 237 3 is_stmt 0 view .LVU456
+ 1400 02c8 049B     		ldr	r3, [sp, #16]
+ 1401              	.LVL102:
+ 237:lib/BTT/src/STFT.c ****     {
+ 1402              		.loc 1 237 3 view .LVU457
+ 1403 02ca 5345     		cmp	r3, r10
+ 1404 02cc 7FF4AFAE 		bne	.L138
+ 1405              	.LVL103:
+ 1406              	.L133:
+ 296:lib/BTT/src/STFT.c ****                 }
+ 297:lib/BTT/src/STFT.c ****             }
+ 298:lib/BTT/src/STFT.c ****         }
+ 299:lib/BTT/src/STFT.c ****     }
+ 300:lib/BTT/src/STFT.c **** }
+ 1407              		.loc 1 300 1 view .LVU458
+ 1408 02d0 0DB0     		add	sp, sp, #52
+ 1409              		.cfi_remember_state
+ 1410              		.cfi_def_cfa_offset 44
+ 1411              		@ sp needed
+ 1412 02d2 BDEC028B 		vldm	sp!, {d8}
+ 1413              		.cfi_restore 80
+ 1414              		.cfi_restore 81
+ 1415              		.cfi_def_cfa_offset 36
+ 1416 02d6 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1417              	.LVL104:
+ 1418              	.L177:
+ 1419              		.cfi_restore_state
+ 287:lib/BTT/src/STFT.c ****               else
+ 1420              		.loc 1 287 17 is_stmt 1 view .LVU459
+ 1421 02da DBF80830 		ldr	r3, [fp, #8]
+ 1422 02de 0093     		str	r3, [sp]
+ 1423 02e0 DBF84030 		ldr	r3, [fp, #64]
+ 1424 02e4 DBF83020 		ldr	r2, [fp, #48]
+ 1425 02e8 DBF83C10 		ldr	r1, [fp, #60]
+ 1426 02ec DBF82C00 		ldr	r0, [fp, #44]
+ 1427 02f0 FFF7FEFF 		bl	dft_2_real_inverse_dfts
+ 1428              	.LVL105:
+ 1429 02f4 B3E7     		b	.L151
+ 1430              	.LVL106:
+ 1431              	.L140:
+ 271:lib/BTT/src/STFT.c ****           dft_apply_window(self->real_2, self->window, self->window_size);
+ 1432              		.loc 1 271 11 is_stmt 0 view .LVU460
+ 1433 02f6 DBF82C30 		ldr	r3, [fp, #44]
+ 1434 02fa 0593     		str	r3, [sp, #20]
+ 1435 02fc 06E7     		b	.L142
+ 1436              	.LVL107:
+ 1437              	.L143:
+ 281:lib/BTT/src/STFT.c ****           onprocess                  (onprocess_self, self->real, self->real_2, self->imag, self->i
+ 1438              		.loc 1 281 11 view .LVU461
+ 1439 02fe DBF83030 		ldr	r3, [fp, #48]
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 36
+
+
+ 1440 0302 0693     		str	r3, [sp, #24]
+ 1441 0304 DBF83C30 		ldr	r3, [fp, #60]
+ 1442 0308 0793     		str	r3, [sp, #28]
+ 1443 030a DBF84030 		ldr	r3, [fp, #64]
+ 1444 030e 0893     		str	r3, [sp, #32]
+ 1445 0310 81E7     		b	.L145
+ 1446              	.L144:
+ 281:lib/BTT/src/STFT.c ****           onprocess                  (onprocess_self, self->real, self->real_2, self->imag, self->i
+ 1447              		.loc 1 281 11 view .LVU462
+ 1448 0312 059F     		ldr	r7, [sp, #20]
+ 1449              	.L146:
+ 275:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 1450              		.loc 1 275 15 is_stmt 1 view .LVU463
+ 275:lib/BTT/src/STFT.c ****               self->imag[j] = 0;
+ 1451              		.loc 1 275 29 is_stmt 0 view .LVU464
+ 1452 0314 A0EC018A 		vstmia.32	r0!, {s16}
+ 276:lib/BTT/src/STFT.c ****               self->real_2[j] = 0;
+ 1453              		.loc 1 276 15 is_stmt 1 view .LVU465
+ 273:lib/BTT/src/STFT.c ****             {
+ 1454              		.loc 1 273 11 is_stmt 0 view .LVU466
+ 1455 0318 6045     		cmp	r0, ip
+ 276:lib/BTT/src/STFT.c ****               self->real_2[j] = 0;
+ 1456              		.loc 1 276 29 view .LVU467
+ 1457 031a A5EC018A 		vstmia.32	r5!, {s16}
+ 277:lib/BTT/src/STFT.c ****               self->imag_2[j] = 0;
+ 1458              		.loc 1 277 15 is_stmt 1 view .LVU468
+ 277:lib/BTT/src/STFT.c ****               self->imag_2[j] = 0;
+ 1459              		.loc 1 277 31 is_stmt 0 view .LVU469
+ 1460 031e A7EC018A 		vstmia.32	r7!, {s16}
+ 278:lib/BTT/src/STFT.c ****             }
+ 1461              		.loc 1 278 15 is_stmt 1 view .LVU470
+ 278:lib/BTT/src/STFT.c ****             }
+ 1462              		.loc 1 278 31 is_stmt 0 view .LVU471
+ 1463 0322 A6EC018A 		vstmia.32	r6!, {s16}
+ 273:lib/BTT/src/STFT.c ****             {
+ 1464              		.loc 1 273 51 is_stmt 1 view .LVU472
+ 273:lib/BTT/src/STFT.c ****             {
+ 1465              		.loc 1 273 36 view .LVU473
+ 273:lib/BTT/src/STFT.c ****             {
+ 1466              		.loc 1 273 11 is_stmt 0 view .LVU474
+ 1467 0326 F5D1     		bne	.L146
+ 1468 0328 75E7     		b	.L145
+ 1469              	.L179:
+ 1470 032a 00BF     		.align	2
+ 1471              	.L178:
+ 1472 032c 00000000 		.word	0
+ 1473              		.cfi_endproc
+ 1474              	.LFE328:
+ 1476              		.text
+ 1477              	.Letext0:
+ 1478              		.file 2 "lib/BTT/src/DFT.h"
+ 1479              		.file 3 "lib/BTT/src/STFT.h"
+ 1480              		.file 4 "/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/stdlib.h"
+ 1481              		.file 5 "<built-in>"
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s 			page 37
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 STFT.c
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:19     .text.stft_destroy:0000000000000000 $t
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:26     .text.stft_destroy:0000000000000000 stft_destroy
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:103    .text.stft_new:0000000000000000 $t
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:110    .text.stft_new:0000000000000000 stft_new
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:266    .text.stft_process:0000000000000000 $t
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:273    .text.stft_process:0000000000000000 stft_process
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:515    .text.stft_process:0000000000000124 $d
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:520    .text.stft_get_N:0000000000000000 $t
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:527    .text.stft_get_N:0000000000000000 stft_get_N
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:545    .text.stft_get_overlap:0000000000000000 $t
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:552    .text.stft_get_overlap:0000000000000000 stft_get_overlap
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:570    .text.stft_get_hop:0000000000000000 $t
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:577    .text.stft_get_hop:0000000000000000 stft_get_hop
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:595    .text.two_stfts_destroy:0000000000000000 $t
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:602    .text.two_stfts_destroy:0000000000000000 two_stfts_destroy
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:723    .text.two_stfts_new:0000000000000000 $t
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:730    .text.two_stfts_new:0000000000000000 two_stfts_new
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:976    .text.two_stfts_process:0000000000000000 $t
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:983    .text.two_stfts_process:0000000000000000 two_stfts_process
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cctiwXvC.s:1472   .text.two_stfts_process:000000000000032c $d
+
+UNDEFINED SYMBOLS
+free
+calloc
+dft_init_blackman_window
+dft_apply_window
+memset
+rdft_real_forward_dft
+rdft_real_inverse_dft
+dft_2_real_forward_dfts
+dft_real_inverse_dft
+dft_2_real_inverse_dfts
