@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 1
 
 
    1              		.cpu cortex-m7
@@ -11,7 +11,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
    8              		.eabi_attribute 24, 1
    9              		.eabi_attribute 25, 1
   10              		.eabi_attribute 26, 1
-  11              		.eabi_attribute 30, 2
+  11              		.eabi_attribute 30, 4
   12              		.eabi_attribute 34, 1
   13              		.eabi_attribute 18, 4
   14              		.file	"fastsin.c"
@@ -58,7 +58,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
   57 0084 F2414F3D 		.word	1028604402
   58 0088 5D88553D 		.word	1029015645
   59 008c C8CE5B3D 		.word	1029426888
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 2
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 2
 
 
   60 0090 2714623D 		.word	1029837863
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  114 0168 42EC0C3E 		.word	1041034306
  115 016c 747A0E3E 		.word	1041136244
  116 0170 A708103E 		.word	1041238183
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 3
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 3
 
 
  117 0174 D996113E 		.word	1041340121
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  171 024c 84F4643E 		.word	1046803588
  172 0250 6C7C663E 		.word	1046903916
  173 0254 1004683E 		.word	1047004176
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 4
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 4
 
 
  174 0258 B58B693E 		.word	1047104437
@@ -238,7 +238,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  228 0330 849E9D3E 		.word	1050517124
  229 0334 C05D9E3E 		.word	1050566080
  230 0338 DA1C9F3E 		.word	1050615002
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 5
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 5
 
 
  231 033c F5DB9F3E 		.word	1050663925
@@ -298,7 +298,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  285 0414 5C8EC73E 		.word	1053265500
  286 0418 6F47C83E 		.word	1053312879
  287 041c 8200C93E 		.word	1053360258
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 6
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 6
 
 
  288 0420 52B9C93E 		.word	1053407570
@@ -358,7 +358,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  342 04f8 01F8EF3E 		.word	1055913985
  343 04fc 7AA9F03E 		.word	1055959418
  344 0500 F35AF13E 		.word	1056004851
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 7
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 7
 
 
  345 0504 280CF23E 		.word	1056050216
@@ -418,7 +418,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  399 05dc 24460B3F 		.word	1057703460
  400 05e0 6B9A0B3F 		.word	1057725035
  401 05e4 A2EE0B3F 		.word	1057746594
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 8
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 8
 
 
  402 05e8 C8420C3F 		.word	1057768136
@@ -478,7 +478,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  456 06c0 D87F1D3F 		.word	1058897880
  457 06c4 03CF1D3F 		.word	1058918147
  458 06c8 1D1E1E3F 		.word	1058938397
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 9
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 9
 
 
  459 06cc 266D1E3F 		.word	1058958630
@@ -538,7 +538,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  513 07a4 77852E3F 		.word	1060013431
  514 07a8 FFCE2E3F 		.word	1060032255
  515 07ac 55182F3F 		.word	1060051029
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 10
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 10
 
 
  516 07b0 AA612F3F 		.word	1060069802
@@ -598,7 +598,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  570 0888 C6353E3F 		.word	1061041606
  571 088c 03793E3F 		.word	1061058819
  572 0890 1FBC3E3F 		.word	1061075999
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 11
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 11
 
 
  573 0894 19FF3E3F 		.word	1061093145
@@ -658,7 +658,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  627 096c 08724C3F 		.word	1061974536
  628 0970 75AE4C3F 		.word	1061990005
  629 0974 D1EA4C3F 		.word	1062005457
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 12
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 12
 
 
  630 0978 FA264D3F 		.word	1062020858
@@ -718,7 +718,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  684 0a50 641E593F 		.word	1062805092
  685 0a54 9C53593F 		.word	1062818716
  686 0a58 B188593F 		.word	1062832305
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 13
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 13
 
 
  687 0a5c 94BD593F 		.word	1062845844
@@ -778,7 +778,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  741 0b34 2522643F 		.word	1063526949
  742 0b38 B14F643F 		.word	1063538609
  743 0b3c 1C7D643F 		.word	1063550236
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 14
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 14
 
 
  744 0b40 54AA643F 		.word	1063561812
@@ -838,7 +838,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  798 0c18 A9676D3F 		.word	1064134569
  799 0c1c 268D6D3F 		.word	1064144166
  800 0c20 92B26D3F 		.word	1064153746
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 15
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 15
 
 
  801 0c24 DCD76D3F 		.word	1064163292
@@ -898,7 +898,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  855 0cfc CADC743F 		.word	1064623306
  856 0d00 05FA743F 		.word	1064630789
  857 0d04 2F17753F 		.word	1064638255
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 16
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 16
 
 
  858 0d08 1634753F 		.word	1064645654
@@ -958,7 +958,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  912 0de0 FC727A3F 		.word	1064989436
  913 0de4 C2877A3F 		.word	1064994754
  914 0de8 569C7A3F 		.word	1065000022
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 17
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 17
 
 
  915 0dec C9B07A3F 		.word	1065005257
@@ -1018,7 +1018,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  969 0ec4 5C1F7E3F 		.word	1065230172
  970 0ec8 6B2B7E3F 		.word	1065233259
  971 0ecc 58377E3F 		.word	1065236312
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 18
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 18
 
 
  972 0ed0 24437E3F 		.word	1065239332
@@ -1078,7 +1078,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1026 0fa8 B6DA7F3F 		.word	1065343670
  1027 0fac FDDD7F3F 		.word	1065344509
  1028 0fb0 22E17F3F 		.word	1065345314
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 19
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 19
 
 
  1029 0fb4 26E47F3F 		.word	1065346086
@@ -1138,7 +1138,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1083 108c 90A17F3F 		.word	1065329040
  1084 1090 209C7F3F 		.word	1065327648
  1085 1094 7D967F3F 		.word	1065326205
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 20
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 20
 
 
  1086 1098 B8907F3F 		.word	1065324728
@@ -1198,7 +1198,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1140 1170 71747D3F 		.word	1065186417
  1141 1174 38667D3F 		.word	1065182776
  1142 1178 DE577D3F 		.word	1065179102
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 21
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 21
 
 
  1143 117c 52497D3F 		.word	1065175378
@@ -1258,7 +1258,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1197 1254 9B57793F 		.word	1064916891
  1198 1258 BC40793F 		.word	1064911036
  1199 125c BB29793F 		.word	1064905147
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 22
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 22
 
 
  1200 1260 9912793F 		.word	1064899225
@@ -1318,7 +1318,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1254 1338 0D53733F 		.word	1064522509
  1255 133c B933733F 		.word	1064514489
  1256 1340 4414733F 		.word	1064506436
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 23
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 23
 
 
  1257 1344 AEF4723F 		.word	1064498350
@@ -1378,7 +1378,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1311 141c 93726B3F 		.word	1064006291
  1312 1420 0E4B6B3F 		.word	1063996174
  1313 1424 57236B3F 		.word	1063986007
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 24
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 24
 
 
  1314 1428 8FFB6A3F 		.word	1063975823
@@ -1438,7 +1438,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1368 1500 93C5613F 		.word	1063372179
  1369 1504 2096613F 		.word	1063360032
  1370 1508 8C66613F 		.word	1063347852
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 25
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 25
 
 
  1371 150c D636613F 		.word	1063335638
@@ -1498,7 +1498,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1425 15e4 FF5E563F 		.word	1062625023
  1426 15e8 0228563F 		.word	1062610946
  1427 15ec D4F0553F 		.word	1062596820
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 26
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 26
 
 
  1428 15f0 95B9553F 		.word	1062582677
@@ -1558,7 +1558,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1482 16c8 1D55493F 		.word	1061770525
  1483 16cc FD16493F 		.word	1061754621
  1484 16d0 BAD8483F 		.word	1061738682
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 27
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 27
 
 
  1485 16d4 569A483F 		.word	1061722710
@@ -1618,7 +1618,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1539 17ac 6EC13A3F 		.word	1060815214
  1540 17b0 9E7C3A3F 		.word	1060797598
  1541 17b4 BD373A3F 		.word	1060779965
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 28
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 28
 
 
  1542 17b8 AAF2393F 		.word	1060762282
@@ -1678,7 +1678,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1596 1890 83C02A3F 		.word	1059766403
  1597 1894 8A752A3F 		.word	1059747210
  1598 1898 802A2A3F 		.word	1059728000
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 29
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 29
 
 
  1599 189c 55DF293F 		.word	1059708757
@@ -1738,7 +1738,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1653 1974 8F71193F 		.word	1058632079
  1654 1978 1421193F 		.word	1058611476
  1655 197c 78D0183F 		.word	1058590840
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 30
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 30
 
 
  1656 1980 BB7F183F 		.word	1058570171
@@ -1798,7 +1798,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1710 1a58 83F6063F 		.word	1057420931
  1711 1a5c 0EA1063F 		.word	1057399054
  1712 1a60 884B063F 		.word	1057377160
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 31
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 31
 
 
  1713 1a64 E0F5053F 		.word	1057355232
@@ -1858,7 +1858,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1767 1b3c FBE6E63E 		.word	1055319803
  1768 1b40 6A33E63E 		.word	1055273834
  1769 1b44 D87FE53E 		.word	1055227864
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 32
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 32
 
 
  1770 1b48 03CCE43E 		.word	1055181827
@@ -1918,7 +1918,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1824 1c20 431DBE3E 		.word	1052646723
  1825 1c24 7C62BD3E 		.word	1052598908
  1826 1c28 B5A7BC3E 		.word	1052551093
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 33
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 33
 
 
  1827 1c2c ABECBB3E 		.word	1052503211
@@ -1978,7 +1978,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1881 1d04 B1DF933E 		.word	1049878449
  1882 1d08 251F933E 		.word	1049829157
  1883 1d0c 9A5E923E 		.word	1049779866
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 34
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 34
 
 
  1884 1d10 ED9D913E 		.word	1049730541
@@ -2038,7 +2038,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1938 1de8 F301513E 		.word	1045496307
  1939 1dec 36784F3E 		.word	1045395510
  1940 1df0 78EE4D3E 		.word	1045294712
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 35
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 35
 
 
  1941 1df4 77644C3E 		.word	1045193847
@@ -2098,7 +2098,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  1995 1ecc 2657F13D 		.word	1039226662
  1996 1ed0 A838EE3D 		.word	1039022248
  1997 1ed4 A419EB3D 		.word	1038817700
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 36
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 36
 
 
  1998 1ed8 A0FAE73D 		.word	1038613152
@@ -2158,7 +2158,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2052 1fb0 234AFB3C 		.word	1023101475
  2053 1fb4 34BBEE3C 		.word	1022278452
  2054 1fb8 2C2AE23C 		.word	1021454892
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 37
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 37
 
 
  2055 1fbc 3D9BD53C 		.word	1020631869
@@ -2218,7 +2218,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2109 2094 925A68BD 		.word	-1117234542
  2110 2098 F19F6EBD 		.word	-1116823567
  2111 209c 5CE674BD 		.word	-1116412324
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 38
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 38
 
 
  2112 20a0 BB2B7BBD 		.word	-1116001349
@@ -2278,7 +2278,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2166 2178 C82413BE 		.word	-1106041656
  2167 217c B7B214BE 		.word	-1105939785
  2168 2180 644016BE 		.word	-1105837980
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 39
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 39
 
 
  2169 2184 53CE17BE 		.word	-1105736109
@@ -2338,7 +2338,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2223 225c 16136BBE 		.word	-1100279018
  2224 2260 789A6CBE 		.word	-1100178824
  2225 2264 96216EBE 		.word	-1100078698
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 40
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 40
 
 
  2226 2268 B5A86FBE 		.word	-1099978571
@@ -2398,7 +2398,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2280 2340 ED9AA0BE 		.word	-1096770835
  2281 2344 C559A1BE 		.word	-1096721979
  2282 2348 7A18A2BE 		.word	-1096673158
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 41
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 41
 
 
  2283 234c 30D7A2BE 		.word	-1096624336
@@ -2458,7 +2458,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2337 2424 0072CABE 		.word	-1094028800
  2338 2428 AE2ACBBE 		.word	-1093981522
  2339 242c 3BE3CBBE 		.word	-1093934277
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 42
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 42
 
 
  2340 2430 849BCCBE 		.word	-1093887100
@@ -2518,7 +2518,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2394 2508 3CBDF2BE 		.word	-1091388100
  2395 250c 2F6EF3BE 		.word	-1091342801
  2396 2510 001FF4BE 		.word	-1091297536
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 43
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 43
 
 
  2397 2514 AFCFF4BE 		.word	-1091252305
@@ -2578,7 +2578,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2451 25ec DD960CBF 		.word	-1089693987
  2452 25f0 D1EA0CBF 		.word	-1089672495
  2453 25f4 B43E0DBF 		.word	-1089651020
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 44
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 44
 
 
  2454 25f8 86920DBF 		.word	-1089629562
@@ -2638,7 +2638,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2508 26d0 0EBC1EBF 		.word	-1088504818
  2509 26d4 E50A1FBF 		.word	-1088484635
  2510 26d8 9B591FBF 		.word	-1088464485
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 45
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 45
 
 
  2511 26dc 3FA81FBF 		.word	-1088444353
@@ -2698,7 +2698,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2565 27b4 CEAA2FBF 		.word	-1087395122
  2566 27b8 E0F32FBF 		.word	-1087376416
  2567 27bc E23C30BF 		.word	-1087357726
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 46
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 46
 
 
  2568 27c0 C28530BF 		.word	-1087339070
@@ -2758,7 +2758,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2622 2898 03423FBF 		.word	-1086373373
  2623 289c BA843FBF 		.word	-1086356294
  2624 28a0 60C73FBF 		.word	-1086339232
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 47
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 47
 
 
  2625 28a4 F60940BF 		.word	-1086322186
@@ -2818,7 +2818,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2679 297c 13634DBF 		.word	-1085447405
  2680 2980 0A9F4DBF 		.word	-1085432054
  2681 2984 CFDA4DBF 		.word	-1085416753
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 48
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 48
 
 
  2682 2988 83164EBF 		.word	-1085401469
@@ -2878,7 +2878,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2736 2a60 67F259BF 		.word	-1084624281
  2737 2a64 18275ABF 		.word	-1084610792
  2738 2a68 A75B5ABF 		.word	-1084597337
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 49
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 49
 
 
  2739 2a6c 04905ABF 		.word	-1084583932
@@ -2938,7 +2938,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2793 2b44 7BD764BF 		.word	-1083910277
  2794 2b48 710465BF 		.word	-1083898767
  2795 2b4c 553165BF 		.word	-1083887275
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 50
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 50
 
 
  2796 2b50 075E65BF 		.word	-1083875833
@@ -2998,7 +2998,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2850 2c28 F4FC6DBF 		.word	-1083310860
  2851 2c2c EA216EBF 		.word	-1083301398
  2852 2c30 BF466EBF 		.word	-1083291969
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 51
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 51
 
 
  2853 2c34 726B6EBF 		.word	-1083282574
@@ -3058,7 +3058,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2907 2d0c EC5075BF 		.word	-1082830612
  2908 2d10 8F6D75BF 		.word	-1082823281
  2909 2d14 228A75BF 		.word	-1082815966
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 52
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 52
 
 
  2910 2d18 83A675BF 		.word	-1082808701
@@ -3118,7 +3118,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  2964 2df0 19C57ABF 		.word	-1082473191
  2965 2df4 38D97ABF 		.word	-1082468040
  2966 2df8 35ED7ABF 		.word	-1082462923
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 53
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 53
 
 
  2967 2dfc 11017BBF 		.word	-1082457839
@@ -3178,7 +3178,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3021 2ed4 BE4E7EBF 		.word	-1082241346
  3022 2ed8 365A7EBF 		.word	-1082238410
  3023 2edc 8C657EBF 		.word	-1082235508
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 54
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 54
 
 
  3024 2ee0 B0707EBF 		.word	-1082232656
@@ -3238,7 +3238,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3078 2fb8 08E77FBF 		.word	-1082136824
  3079 2fbc B8E97FBF 		.word	-1082136136
  3080 2fc0 46EC7FBF 		.word	-1082135482
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 55
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 55
 
 
  3081 2fc4 A2EE7FBF 		.word	-1082134878
@@ -3298,7 +3298,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3135 309c C28A7FBF 		.word	-1082160446
  3136 30a0 A9847FBF 		.word	-1082162007
  3137 30a4 6F7E7FBF 		.word	-1082163601
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 56
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 56
 
 
  3138 30a8 03787FBF 		.word	-1082165245
@@ -3358,7 +3358,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3192 3180 B43A7DBF 		.word	-1082312012
  3193 3184 D42B7DBF 		.word	-1082315820
  3194 3188 E31C7DBF 		.word	-1082319645
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 57
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 57
 
 
  3195 318c BF0D7DBF 		.word	-1082323521
@@ -3418,7 +3418,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3249 3264 44FB78BF 		.word	-1082590396
  3250 3268 DEE378BF 		.word	-1082596386
  3251 326c 36CC78BF 		.word	-1082602442
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 58
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 58
 
 
  3252 3270 7CB478BF 		.word	-1082608516
@@ -3478,7 +3478,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3306 3348 E5D472BF 		.word	-1082993435
  3307 334c 0BB572BF 		.word	-1083001589
  3308 3350 FF9472BF 		.word	-1083009793
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 59
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 59
 
 
  3309 3354 C17472BF 		.word	-1083018047
@@ -3538,7 +3538,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3363 342c 95D36ABF 		.word	-1083518059
  3364 3430 7AAB6ABF 		.word	-1083528326
  3365 3434 3C836ABF 		.word	-1083538628
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 60
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 60
 
 
  3366 3438 DE5A6ABF 		.word	-1083548962
@@ -3598,7 +3598,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3420 3510 EE0661BF 		.word	-1084160274
  3421 3514 F5D660BF 		.word	-1084172555
  3422 3518 CAA660BF 		.word	-1084184886
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 61
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 61
 
 
  3423 351c 8E7660BF 		.word	-1084197234
@@ -3658,7 +3658,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3477 35f4 348255BF 		.word	-1084915148
  3478 35f8 A14A55BF 		.word	-1084929375
  3479 35fc FD1255BF 		.word	-1084943619
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 62
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 62
 
 
  3480 3600 38DB54BF 		.word	-1084957896
@@ -3718,7 +3718,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3534 36d8 D15B48BF 		.word	-1085776943
  3535 36dc 2A1D48BF 		.word	-1085792982
  3536 36e0 61DE47BF 		.word	-1085809055
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 63
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 63
 
 
  3537 36e4 889F47BF 		.word	-1085825144
@@ -3778,7 +3778,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3591 37bc 86AD39BF 		.word	-1086739066
  3592 37c0 406839BF 		.word	-1086756800
  3593 37c4 D92239BF 		.word	-1086774567
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 64
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 64
 
 
  3594 37c8 61DD38BF 		.word	-1086792351
@@ -3838,7 +3838,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3648 38a0 189429BF 		.word	-1087794152
  3649 38a4 BB4829BF 		.word	-1087813445
  3650 38a8 3BFD28BF 		.word	-1087832773
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 65
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 65
 
 
  3651 38ac ABB128BF 		.word	-1087852117
@@ -3898,7 +3898,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3705 3984 FD2E18BF 		.word	-1088934147
  3706 3988 0DDE17BF 		.word	-1088954867
  3707 398c 1E8D17BF 		.word	-1088975586
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 66
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 66
 
 
  3708 3990 0C3C17BF 		.word	-1088996340
@@ -3958,7 +3958,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3762 3a68 27A005BF 		.word	-1090150361
  3763 3a6c 5E4A05BF 		.word	-1090172322
  3764 3a70 84F404BF 		.word	-1090194300
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 67
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 67
 
 
  3765 3a74 999E04BF 		.word	-1090216295
@@ -4018,7 +4018,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3819 3b4c 0D18E4BE 		.word	-1092347891
  3820 3b50 F563E3BE 		.word	-1092393995
  3821 3b54 BCAFE2BE 		.word	-1092440132
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 68
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 68
 
 
  3822 3b58 61FBE1BE 		.word	-1092486303
@@ -4078,7 +4078,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3876 3c30 A131BBBE 		.word	-1095028319
  3877 3c34 7576BABE 		.word	-1095076235
  3878 3c38 28BBB9BE 		.word	-1095124184
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 69
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 69
 
 
  3879 3c3c B9FFB8BE 		.word	-1095172167
@@ -4138,7 +4138,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3933 3d14 1EDD90BE 		.word	-1097802466
  3934 3d18 2E1C90BE 		.word	-1097851858
  3935 3d1c 3E5B8FBE 		.word	-1097901250
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 70
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 70
 
 
  3936 3d20 2C9A8EBE 		.word	-1097950676
@@ -4198,7 +4198,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  3990 3df8 34DA4ABE 		.word	-1102390732
  3991 3dfc 335049BE 		.word	-1102491597
  3992 3e00 ACC547BE 		.word	-1102592596
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 71
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 71
 
 
  3993 3e04 693B46BE 		.word	-1102693527
@@ -4258,7 +4258,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  4047 3edc 9CDBE4BD 		.word	-1109075044
  4048 3ee0 12BCE1BD 		.word	-1109279726
  4049 3ee4 889CDEBD 		.word	-1109484408
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 72
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 72
 
 
  4050 3ee8 FE7CDBBD 		.word	-1109689090
@@ -4318,7 +4318,7 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  4104 3fc0 350AC9BC 		.word	-1127675339
  4105 3fc4 467BBCBC 		.word	-1128498362
  4106 3fc8 3EEAAFBC 		.word	-1129321922
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 73
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 73
 
 
  4107 3fcc 3659A3BC 		.word	-1130145482
@@ -4339,12 +4339,12 @@ ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 1
  4122              		.file 1 "/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/machine/_default_types.h"
  4123              		.file 2 "/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/sys/_stdint.h"
  4124              		.file 3 "lib/BTT/src/fastsin.c"
-ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s 			page 74
+ARM GAS  /var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s 			page 74
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 fastsin.c
-/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s:23     .rodata.sinTable:0000000000000000 sinTable
-/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//ccXR5JeR.s:20     .rodata.sinTable:0000000000000000 $d
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s:23     .rodata.sinTable:0000000000000000 sinTable
+/var/folders/lw/_hmdf9396f92znj902yw3qj00000gn/T//cc2voPXQ.s:20     .rodata.sinTable:0000000000000000 $d
 
 NO UNDEFINED SYMBOLS
